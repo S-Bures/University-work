@@ -1,0 +1,11 @@
+,label,text,googleScore,VADER_compound,VADER_class,GoogleNLP_class,BERT
+0,Positive,?RT @justinbiebcr: The bigger the better....if you know what I mean ;),0.3,0.2263,Neutral,Neutral,positive
+1,Positive,"Listening to the ""New Age"" station on @SlackerRadio ? http://slacker.com/r/nqKf",0.2,0.0,Neutral,Neutral,neutral
+2,Neutral,"I favorited a YouTube video -- Drake and Josh - The Storm ""We will rock you"" http://youtu.be/v1Cib4kDPsI?a",0.0,0.4019,Neutral,Neutral,positive
+3,Positive,i didnt mean knee high I ment in lengt it goes down to my knees ^-^ and is so cute I love it!,0.8,0.8632,Positive,Positive,positive
+4,Neutral,I wana see the vid Kyan,0.0,0.0,Neutral,Neutral,neutral
+5,Negative,if my mom went on for the love of ray J or any reality show i'd bee pissed .,-0.1,0.0,Neutral,Neutral,negative
+6,Neutral,"Ok so I just got a deal for my own show ""For The Love Of Deez Nuts"" go to VH1/deezNuts to apply ....R u here for Deez Nuts???",0.4,0.5171,Positive,Positive,positive
+7,Positive,@Mrhilton1985 Welcome to Twitter xx,0.6,0.4588,Neutral,Positive,positive
+8,Neutral,"@kjbmusic oh yeah... however, I'd still like to be in the midst of it all though... u know...",0.3,0.5719,Positive,Neutral,neutral
+9,Neutral,Can't say I like the new facebook layout. But just posted pics from my Super Bowl week. =),0.3,0.8777,Positive,Neutral,positive

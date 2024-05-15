@@ -1,0 +1,31 @@
+LLM Project Update
+------------------
+
+Math
+----
+	- Scale up
+	- finding more questions per topic (i.e. using GPT)
+	- Benchmark data sets: Math Q&A what problems do they use and how do they extract the answer (--> see included code base for how to extract answers?)
+	- Ask for answer in a certain format, i.e. json
+	- Only one or two prompts would be too little to make general statements, compute variance etc.
+	- 5 easy and 5 hard questions, look in benchmarks and take tough questions, where other LLMs performed poorly
+	- do some manual annotations and compare performance against automated extraction
+
+
+
+Coding
+------
+	- Sharon already has logical questions (lead code questions) --> no need to cover
+	- Here, focus should be on a running code
+	- Give same question as the students gor and make tweeks later on as a start and reshuffle prompt 
+	- Rather smaller, but more different problems 
+		- Here experience is that more obscure issues lead to hallucinate
+		- Rather 5 smaller different problems and for the checking only check if running/not running
+
+
+Moral
+-----
+	- Want to try jailbreaking then we don't necessary need to stick to the prompts we used in the other areas (as they don't apply, rather see it as an extension)
+	- find base scenarios and extract answers in a way might be more difficult
+	- start with jailbreaking, but of not usable switch to either killing/cannabin or then contraception/affair/premairtal sex
+	- for jailbreaking try out new/other techniques since this does not work on moral issues. 

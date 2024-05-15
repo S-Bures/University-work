@@ -1,0 +1,31 @@
+Exercise 1 - good
+
+Exercise 2
+part 2.1) - good
+part 2.2) - good
+part 2.3) - good
+
+Exercise 3
+part 3.1) - good
+# nice plot!
+part 3.2) - good
+
+Exercise 4 - great
+
+Exercise 5 - good
+
+Exercise 6 - 2.5pts
+# first model looks good, would have an even lower BIC without seasonal vars
+
+# second model missing
+# Answer to question in the comments:
+# the second model should have been a simple OLS regression 
+# of weighted ili as a dependent var and the google trends value
+# you got in exercise 4 as an independent variable
+
+# third model doesn't work -> it expects the exogenous vars as a matrix
+# if you pass exog=g_flu["total_volume"].values.reshape(-1, 1) as an argument it works
+
+# plot + discussion missing
+
+Total: 16.5

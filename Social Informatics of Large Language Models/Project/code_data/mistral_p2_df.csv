@@ -1,0 +1,1851 @@
+,prompt_type,prompt,positioning,run_1,run_2,run_3
+0,default," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",1,"<s> 
+Here is the sample dataframe:
+
+``` python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+esc_2010 = pd.DataFrame({'Contestants': ['Country_1', 'Country_2', 'Country_3', 'Country_4', 'Country_1', 'Country_2', 'Country_3', 'Country_4', 'Country_1', 'Country_3', 'Country_4', 'Country_1', 'Country_2', 'Country_3', 'Country_4', 'Country_1', 'Country_2', 'Country_3', 'Country_4', 'Country_1', 'Country_3', 'Country_4'],
+                       'Total score': [120, 138, 104, 152, 116, 122, 118, 106, 127, 122, 120, 113, 102, 115, 110, 114, 101, 112, 125, 106, 117],
+                       'San Marino': [0, 1, 2, 7, 0, 2, 8, 3, 0, 4, 6, 3, 0, 1, 0, 5, 0, 0, 0, 0, 1],
+                       'Sweden': [1, 0, 0, 5, 5, 5, 5, 5, 1, 5, 1, 5, 1, 5, 5, 5, 5, 5, 5, 5, 5],
+                       'Albania': [0, 3, 5, 2, 0, 5, 0, 0, 8, 2, 0, 0, 2, 0, 0, 0, 2, 4, 1, 0, 0],
+                       'Netherlands': [0, 2, 0","<s> The resulting plot should be saved to a file named `eurovisionscoring`.
+---
+To complete this task, we'll use NetworkX library, which is commonly used for creating and analyzing complex networks. Here's a step-by-step guide to solve the problem:
+
+1. Import the necessary libraries
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import networkx as nx
+import pandas as pd
+```
+
+2. Load the `esc_2010` dataframe.
+
+```python
+df = pd.read_csv('esc_2010.csv')
+```
+
+3. Create a new dataframe with only the columns that represent the voters and add a new column `points` to store the points assigned by each country.
+
+```python
+voting_countries = df.columns[2:].tolist()  # Get list of voting countries
+voting_df = df[voting_countries]
+voting_df['points'] = voting_df.sum(axis=1)
+```
+
+4. Create a new, empty graph using NetworkX.
+
+```python
+G = nx.Graph()
+```
+
+5. Add nodes (countries) and their total points to the graph.
+
+```python
+node_data = {}
+for index, row in df.iterrows():
+    country = row['Contestants'].split(', ')[0]
+    total_points = row['Total score']
+    G.add_node(country, total_points=total_points)
+    node_data[country] = {'total_points': total_points}
+```
+
+6. Add edges (connections between countries) and assign edge weights (points) to the graph.
+
+```python
+for index, row in voting_df.iterrows():
+    from_country = row.index.split('_')[0]
+    to_country = row.index.split('_')[1]
+    points = row['points']
+    if 8 <= points <= 12:
+        G.add_edge(from_country, to_country, weight=","<s> Please note that the dataframe is called esc_2010.
+Here is the code which will accomplish the task:
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import networkx as nx
+# Load the data
+data = esc_2010
+# Create a graph where nodes are countries and edges have weighted based on the score
+G = nx.from_pandas_edgelist(data, 'Contestants', 'Country', 'Points')
+# Remove edges with weight below 8, 10 and 12 points
+G = G.edges(data=G.edges[G.edges['Points'].isin([8, 10, 12])])
+# Add total points to the nodes
+data['Total points'] = data['Total score'].str[1:].astype(float)
+G.nodes(data=data)
+# Set node labels
+labels = nx.get_node_attributes(G, 'Total points')
+# Set node colors for countries that didn't participate
+non_contestants = list(esc_2010[esc_2010['Contestants'] == ''].index)
+labels[non_contestants] = 'gray'
+# Set edge colors based on the score
+edge_colors = [(0.5, 0.5, 0.5) if points < 8 else
+              (1, 0.3, 0.3) if points >= 12 else
+              (1, 0, 0) for points in data['Points'].values]
+# Set edge sizes based on the score
+edge_sizes = [points for points in data['Points'].values]
+# Plot the result
+fig, ax = plt.subplots(figsize=(15,15))
+nx.draw_networkx_nodes(G, pos=nx.spring_layout(G), node_color=labels.values)
+nx.draw_networkx_edges(G, pos=nx.spring_layout(G), node_size=1500,
+                      edge_color=edge_colors, edge_width=edge_sizes)
+ax.set"
+1,default,none,2,"<s> 
+
+## 10-05.2015
+
+#### 13:00 - 18:00
+
+Monday, 11 May 2015 11:09:18 Europe/Berlin
+
+#### A workshop organized by the European Cultural Foundation and the European Network Against Racism
+
+The workshop is intended as a space for exchange and mutual learning between young activists from various backgrounds, including Roma, refugees, people of colour, LGBTIQ and other marginalised groups. Together, they will explore the connections and intersections between racism, discrimination and inequality, share experiences of their own struggles and discuss strategies for addressing these issues. The aim of the workshop is to empower the participants and inspire them to take action in their communities and local contexts.
+
+The European Network Against Racism (ENAR) and the European Cultural Foundation (ECF) invite young activists from various backgrounds to take part in the ENAR Youth Workshop on combating racism and discrimination. This one-day workshop, which is the result of a longstanding partnership between ENAR and ECF, aims to empower participants by providing a space for exchange, mutual learning and skills development.
+
+During the workshop, participants will explore the connections and intersections between different forms of discrimination and discuss strategies for addressing these issues. They will also have opportunities to share their experiences, challenges and successful initiatives with each other.
+
+The ENAR Youth Workshop is an opportunity for young activists to build networks, broaden their perspectives and learn from each other. It offers an excellent platform for participants to develop skills, gain inspiration and strengthen their commitment to combating racism and discrimination in their communities and local contexts.
+
+This workshop is part of the ‘YOUth ACT’ project which is co-financed by the Erasmus+ programme of the European Union. It is organised by the European Cultural Foundation, in collaboration with the European Network Against Racism and the European Youth Forum.
+
+Registration
+
+Young people aged 18-30 are warmly invited to register by sending an email to enar@enar-eu.org. The deadline for registration is 1 May 2015. The workshop is free of charge, but travel and accommodation costs are not covered. Participants will be informed of their","<s> 
+
+### 1. What do you do?
+
+I am a graphic design teacher, a wife, a mom, an artist, and a runner. I love creating beautiful things and helping others find their artistic voices. I am passionate about design, education, and my family. I also have a slight obsession with running and fitness, and I love to read and explore.
+
+### 2. Where are you from originally?
+
+I am originally from a small town in northern New Jersey, but I have lived in the Philadelphia area for almost fifteen years. I love the city (I am a true Philly girl), but I also love escaping to the surrounding suburbs when I need a break.
+
+### 3. What inspires you?
+
+There are so many things that inspire me! Nature, art, design, architecture, people, and culture all fuel my creativity. I am always on the lookout for new ideas, colors, and patterns to inspire my work.
+
+### 4. What is the hardest part of being a graphic designer?
+
+The hardest part of being a graphic designer is staying up-to-date with the latest trends and technologies in the industry. Design is constantly evolving, and it can be challenging to keep up with all of the new tools, techniques, and software. However, I love the challenge, and I am always eager to learn new things and expand my skills.
+
+### 5. What is your favorite part of being a graphic designer?
+
+My favorite part of being a graphic designer is seeing a project come to life. Whether it's a simple logo or a full-blown marketing campaign, there is nothing more satisfying than taking an idea and turning it into a beautiful, functional, and effective design. I also love working with clients and helping them bring their vision to life.
+
+### 6. What is your favorite graphic design tool?
+
+It's hard to choose just one favorite graphic design tool, but I would have to say that Adobe Illustrator is at the top of my list. I love the versatility and flexibility of the program, and I use it for everything from creating logos and icons to designing layouts and illustrations.
+
+### 7. What's your favorite color or combination of colors?
+
+My favorite color is blue, but I also love working with","<s>  of the above. I think it is best described as a cross between a traditional English pub and a French bistro. There is a cozy, rustic feel to the place, with wooden tables and exposed brick walls. The menu features classic pub fare like fish and chips and burgers, as well as French dishes like steak frites and coq au vin. The atmosphere is lively and convivial, with a mix of locals and tourists. The service is friendly and efficient, and the prices are reasonable. I would say it is a great place for a casual meal or a drink with friends.
+
+Here's a more detailed description:
+
+The pub, which I'll call ""The French Pub,"" is located in a trendy neighborhood known for its eclectic mix of restaurants and bars. The exterior is unassuming, with a simple wooden sign and a small courtyard where customers can smoke or enjoy a drink in the fresh air.
+
+As you enter The French Pub, you are greeted by the warm and welcoming smell of roasted meats and fresh baked bread. The interior is dimly lit, with soft glow of candles and old-fashioned lamps casting an inviting, cozy glow over the space. The walls are adorned with vintage French posters and memorabilia, adding to the authentic bistro feel.
+
+The bar runs the length of the room and is stocked with an impressive selection of local and international beers, wines, and spirits. The bartenders are friendly and knowledgeable, happy to make recommendations or answer any questions.
+
+The menu is divided into sections for starters, main courses, and desserts. The starters include classic pub fare like onion rings and mozzarella sticks, as well as French dishes like escargot and pate. The main courses are equally diverse, with options like fish and chips, burgers, steak frites, and coq au vin. Vegetarian and gluten-free options are also available.
+
+The portion sizes are generous, and the quality of the ingredients is evident in every dish. The fish and chips were perfectly crispy and golden brown, the steak frites were cooked to perfection, and the coq au vin was rich and flavorful. The dessert selection includes classic French offerings like crème brûl"
+2,default,none,3,"<s> 
+
+This is a guest post from my colleague, Janae Shimkus (Twitter: @jarshimkus).  Janae is a member of the National Security Agency’s (NSA) National Foreign Language Resource Center (NFLRC) Language Training Team. She was one of several presenters at the recent NDITA (National Defense Intelligence College's Institute for Terrorism Analysis) conference on language and the intelligence cycle.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+The NSA’s National Foreign Language Resource Center (NFLRC) participated in the National Defense Intelligence College's Institute for Terrorism Analysis (NDITA) conference on Language and the Intelligence Cycle held on June 5-7, 2012, at the National Defense Intelligence College's J.F.K. Special Warfare Center at Fort Bragg, NC. The conference provided an important opportunity for the intelligence community, academia, and the language services community to discuss current and emergent trends in the intelligence cycle as they relate to language services and resources.
+
+During the conference, NFLRC presented a panel discussion on best practices for providing language support within the intelligence cycle. The panel members, all of whom have extensive experience working in the intelligence community, provided insight into how the intelligence community uses language services at each phase of the cycle: collection, processing, analysis, dissemination, and production.
+
+Collection – Capturing Foreign Language Data
+
+Collection involves gathering raw data from various sources. The sources could include human intelligence (HUMINT), signals intelligence (SIGINT), satellite imagery (IMINT), open sources, and other means to collect data that is relevant to understanding an issue or event. During the collection phase, language services can be instrumental to ensure accurate and complete data. For example, during the collection of HUMINT, linguists and translators are essential to ensure effective communication between collectors and sources and to document the data collected from interviews and debriefings. In SIGINT, language services are used to analyze the data in the target language, and in IMINT, linguists are often involved in analyzing metadata, such as phone numbers, addresses, and names.
+
+Processing – Converting Data to Actionable Information
+
+At the processing phase, data collected during the collection phase is analyzed and prepared for consumption by analysts. During","<s> 
+
+# The Facts on Factoring
+
+Factoring is a financing method that can help businesses grow by providing them with quick access to cash to meet their working capital needs. In this blog, we will discuss how factoring works and the benefits that come with using this type of financing.
+
+## What is Factoring?
+
+Factoring is a financing technique that involves selling accounts receivables to a third party, called a factor, at a discount. Essentially, when a business sells goods or services on credit, they receive an invoice from their customer for the amount owed. The business can then sell this invoice to a factor, who will pay the business a significant portion of the invoice amount upfront, usually around 70-90%. The remaining balance of the invoice, less a factoring fee, is paid to the business once the customer has paid the invoice in full.
+
+## Benefits of Factoring
+
+1. Quick access to cash: Factoring provides businesses with quick access to cash, allowing them to pay suppliers, hire new employees, or invest in growth opportunities before they have received payment from customers for the related sales.
+2. Improved cash flow: By selling invoices to a factor, businesses can improve their cash flow by reducing their accounts receivable aging and eliminating the need to wait for payment from customers.
+3. Reduced administrative burden: Factoring companies handle the collection and management of accounts receivables, reducing the administrative burden on businesses.
+4. Flexibility: Factoring can be used to finance a range of needs, including growth initiatives and seasonal business fluctuations, providing businesses with the flexibility they need to manage their cash flow effectively.
+5. Increased credit capacity: Factoring can increase a business’s overall credit capacity, allowing them to make larger sales and grow their revenue faster.
+
+At NFIB Commercial Services, we offer factoring solutions to help small and midsize businesses meet their working capital needs. Contact us today to learn more about how we can help you grow your business.
+
+Tags: Financing, Factoring, Accounts Receivable, Cash Flow, Quick Capital, Small Business, SMB, Growth, Credit Capacity, NFIB Commercial Services
+
+Posted: August 03, 2020
+
+","<s> 
+
+## Introduction
+
+The ability to create and manipulate complex data structures is an essential aspect of programming. Python, being a high level dynamic programming language, provides several built-in data structures for handling various types of data. The most popular data structures in Python are:
+
+1. Lists: Lists are orderd and mutable collections of data. They are the most commonly used data structures in Python programming.
+
+2. Tuples: Tuples are orderd and immutable collections of data. They are often used when you want to group data together and don’t intend to modify it.
+
+3. Dictionaries: Dictionaries are unordered and mutable collections of key-value pairs. They are often used when you want to store data in a key-value pair structure.
+
+4. Sets: Sets are unordered and mutable collections of unique data. They are often used when you want to store and work with unique data.
+
+In this article, we will discuss the concept of lists in Python, their syntax, and usage with some examples.
+
+## List Syntax and Basic Usage
+
+A list in Python is a collection of ordered, mutable elements. List elements can be of any data type including other lists. Here's how you create a list in Python:
+
+```python
+# Creating a list using square brackets
+my_list = [1, 2, 3, 4, 5]
+print(my_list)
+
+# Creating an empty list
+my_empty_list = []
+print(my_empty_list)
+
+# Adding an element to a list
+my_list.append(6)
+print(my_list)
+
+# Accessing list elements using indexing
+print(my_list[0])  # Output: 1
+print(my_list[4])  # Output: 5
+
+# Negative indexing
+print(my_list[-1])  # Output: 6
+print(my_list[-5])  # Output: 1
+
+# List iteration
+for i in my_list:
+  print(i)
+
+# List slicing
+print(my_list[1:3])  # Output: [2, 3]
+print(my_list[2"
+3,blurry," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+
+I am a student living on my own. I have 5 cats I need to take care of. I like flowers and rainbows. I listen to metal music and country songs. I think today I will eat pizza for dinner.
+
+Cooking is a lot of fun, I like to take basic recipes and make them special by preparing the food on my own. I also like to play the guitar and I am learning songs that I can play for my friends and family.
+",1,"<s> 
+Here's a possible solution for your data science problem, I tried my best to make it readable and understandable. I assumed you have already loaded the dataframe as 'esc_2010'. If not, you can load it using the pandas library.
+
+First, let's define some variables and helper functions:
+
+```python
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# Define a function to map the points to node colors and edge colors and sizes
+def map_points_to_properties(points, threshold=8):
+    # Map points to node colors
+    node_color_map = {'<={}'.format(threshold): 'g', '>={}'.format(threshold): 'r'}
+    node_color = node_color_map.get(str(np.sum(points > threshold)).isalnum(), 'b') # use blue if not valid threshold points
+
+    # Map points to edge colors and sizes
+    edge_color_map = {'<={}'.format(threshold): 'g', '>={}'.format(threshold): 'r'}
+    edge_color = edge_color_map.get(str(np.sum(points > threshold)).isalnum(), 'k')
+    edge_width = np.sum(points > threshold)
+
+    return {'node_color': node_color, 'edge_color': edge_color, 'edge_width': edge_width}
+
+# Define a helper function to extract countries and points and apply the map_points_to_properties function
+def get_nodes_and_edges_for_plotting(dataframe):
+    nodes = dataframe['Contestants'].tolist() # list all unique countries and contestants (including non-voting ones)
+    data = dataframe.iloc[:, 1:].values.tolist() # all data excluding the first column
+    edges = [] # initialize list for edges
+
+    # Apply map_points_to_properties to data and extract relevant information
+    nodes_with_points = [map_points_to_properties(points, threshold=10) for points in data]
+","<s> 
+But enough about me, let's move on to the code.
+
+First, let me load the library and import the dataframe:
+
+```python
+import networkx as nx
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Assuming you have already imported the pandas dataframe as 'df'
+```
+
+Next, I will create a new dataframe that contains only the rows where at least one of the columns (excluding the Contestants and Total score columns) has a value of 8, 10, or 12. These are the rows where a country assigned points to another country.
+
+```python
+# Create a new dataframe with only the rows where a country assigned points (8, 10, or 12)
+points_assigned = df[(df != 0).sum(axis=1) > 0].copy()
+```
+
+Now, I will create a new Graph object from networkx and add nodes and edges to it based on the dataframe we just created. Each node will be labeled with the contestant's name and the total points they received.
+
+```python
+# Create a new empty graph
+G = nx.Graph()
+
+# Add nodes to the graph
+for index, row in points_assigned.iterrows():
+    G.add_node(index+1, label=row['Contestants'], total_points=row['Total score'])
+
+# Add edges to the graph
+for index, row in points_assigned.iterrows():
+    for country in df.columns[2:]: # Start from the second column (San Marino)
+        if country not in ['Contestants', 'Total score']:
+            if row[country] in [8, 10, 12]:
+                G.add_edge(index+1, df.index[df[country]==row[country]].values[0]+1, weight=row[country])
+
+# Define node colors based on whether a country participated or not
+participating_nodes = points_assigned['Contestants'].isin(df['Contestants'].values).values
+node_colors = ['red' if not participating else","<s> 
+Regarding the task at hand, here is an approach to solve it. First, we will filter the dataframe to select only the rows where at least one country has assigned 8, 10 or 12 points:
+
+```python
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+points_of_interest = [8, 10, 12] # points that matter for the plot
+escs_filtered = esc_2010[(np.sum(esc_2010[col] != 0) > len(points_of_interest)-1) * (esc_2010['Contestants'].isin(esc_2010.columns[~esc_2010.columns.str.startswith('United')])).any(axis=1)]
+```
+
+We will use the Seaborn library to create the plot:
+
+```python
+# create the node sizes based on the total points a country received
+node_size = np.round(escs_filtered['Total score'] * 30) # adjust the multiplier to control the size
+node_color = np.where(escs_filtered['Contestants'].isin(escs_filtered.columns[~escs_filtered.columns.str.startswith('United')]), 'tab:blue', 'tab:gray')
+
+# create the graph
+f, ax = plt.subplots(figsize=(10, 10))
+graph = sns.networkplot(data=escs_filtered, node_size=node_size, node_color=node_color, edge_color=""white"", edge_width=np.abs(escs_filtered['Sweden'] - escs_filtered['San Marino']).abs().astype(np.float64)*3)
+
+# create the labels with the total points
+labels = escs_filtered['Contestants'].astype(str) + ': ' + escs_filtered['Total score'].astype(str)
+graph.add_nodes(len(labels), label=labels)
+
+# set node labels"
+4,blurry,"
+I am a student living on my own. I have 5 cats I need to take care of. I like flowers and rainbows. I listen to metal music and country songs. I think today I will eat pizza for dinner.
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+
+Cooking is a lot of fun, I like to take basic recipes and make them special by preparing the food on my own. I also like to play the guitar and I am learning songs that I can play for my friends and family.
+",2,"<s> 
+Here is a solution to your problem using NetworkX and Matplotlib:
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# Load data
+df = pd.read_csv('escs_2010.csv')
+
+# Filter rows where only votes were assigned
+votes_only = df[df.sum(axis=1) - df.iloc[:, np.r_[0, 1, 2, 3, 11, 12, 13, 14, 15, 16]].abs().sum(axis=1) < 7]
+
+# Create graph
+G = nx.Graph()
+
+# Add nodes for all countries (voters and participants)
+nodes = df.Contestants.unique() + df[df.Total_score.gt(0)].Contestants.unique()
+G.add_nodes_from(nodes)
+
+# Add edges for pairs of countries with points > 0
+idx = pd.IndexSlice
+data = df.iloc[df.Total_score.gt(0)].values
+for i, j, points in np.ndindex(len(nodes), length=2) + idx[:,:,None]:
+    if points > 0:
+        G[i,j] = points
+
+# Add edges and nodes for votes only
+for i, j, points in np.ndindex(len(nodes), length=2) + idx[:,:,None] if i in votes_only.index:
+    if j in df.index:
+        G[i,j] = points
+
+# Plot
+pos = nx.spring_layout(G, seed=None)
+nx.draw_networkx(G, pos=pos, node_size=1000/len(df), node_color=[0 if i in votes_only.index else 1 for i in np.r_[len(nodes)-len(votes_only):]], edge_color=""gray"")
+nx.draw_networkx_nodes(G, pos=pos, node_color=[i/len(df) for i in np.r","<s> 
+Here's the code to create the graph:
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
+def get_points(dataframe, column_name):
+    points = []
+    for index, row in dataframe.iterrows():
+        if np.isnan(row[column_name]):
+            continue
+        points.append(row[column_name])
+    return np.array(points)
+
+def create_graph(dataframe, country_points):
+    countries = dataframe[""Contestants""].unique()
+    edges = []
+
+    for country in countries:
+        if np.isnan(dataframe.loc[dataframe[""Contestants""] == country, ""Total score""].iloc[0]):
+            continue
+        score = dataframe.loc[dataframe[""Contestants""] == country, ""Total score""].iloc[0]
+        points_this_country = get_points(dataframe, country)
+        indexes_of_other_countries = np.where(dataframe[""Contestants""] != country)[0]
+        other_points = []
+        for index in indexes_of_other_countries:
+            points = dataframe.iloc[index]
+            if np.isnan(points[""Total score""]):
+                continue
+            points_other_country = get_points(dataframe, dataframe[""Contestants""][index])
+            weight = min(10, max(np.where(points_this_country == 12)[0].size, np.where(points_other_country == 12)[0].size))
+            other_points.append(points[""Contestants""][index])
+            edges.append((country, points[""Contestants""][index], weight*score/sum(score*np.ones(len(points_this_country))))))
+
+    G = nx.Graph()
+
+    nodes = {}
+    for country in countries:
+        if np.isnan(dataframe.loc[dataframe[""Contestants""] == country, ""Total score""].iloc[0]):
+            nodes[country]","<s> 
+Here's the Python code to solve the task:
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load data and filter for contestants with 8, 10 or 12 points from at least 2 countries
+data = esc_2010[esc_2010[['Contestants']].duplicated(keep=False)] # drop duplicates
+points_thresholds = [8, 10, 12]
+filtered_data = esc_2010[(esc_2010['Contestants'].isin(data.index)) & (esc_2010['Sweden'].isin(points_thresholds)) | # filter for Sweden
+                          (esc_2010['Albania'].isin(points_thresholds)) | # filter for Albania
+                          (esc_2010['Netherlands'].isin(points_thresholds)) | # filter for Netherlands
+                          (esc_2010['Austria'].isin(points_thresholds)) | # filter for Austria
+                          (esc_2010['United Kingdom'].isin(points_thresholds)) | # filter for United Kingdom
+                          (esc_2010['Israel'].isin(points_thresholds)) | # filter for Israel
+                          (esc_2010['Serbia'].isin(points_thresholds))] # filter for Serbia
+
+# Create a network graph
+nodes = filtered_data['Contestants'].values # nodes
+points = filtered_data[['Sweden', 'Albania', 'Netherlands', 'Austria', 'United Kingdom', 'Israel', 'Serbia']].values.flatten() # points
+edges = filtered_data[['Contestants_x', 'Contestants_y', 'Sweden', 'Albania', 'Netherlands', 'Austria', 'United Kingdom', 'Israel', 'Serbia']].values.tolist() # edges, with Contestants_x and Contestants_y are the corresponding indices in the Contestants column"
+5,blurry,"
+I am a student living on my own. I have 5 cats I need to take care of. I like flowers and rainbows. I listen to metal music and country songs. I think today I will eat pizza for dinner.
+
+Cooking is a lot of fun, I like to take basic recipes and make them special by preparing the food on my own. I also like to play the guitar and I am learning songs that I can play for my friends and family.
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",3,"<s> 
+Here is an example of the dataframe you are given:
+
+    Contestants         Total score     San Marino      Sweden       Albania       ....          Ireland          Denmark          Montenegro       Slovenia         Georgia         Macedonia       Cyprus              Croatia         Switzerland          Lithuania
+0                    A                   35             3            5               ....             3               12              3                4                 1                1                1                1              7                8
+1                    B                   50             8            10               ....            10             12              12             10                5                1                2                2              6                10
+2                    C                   40             6            7               ....             8               5              6                3                2                2                1                3              5                3
+3                    D                 100             8            12               ....            12             8              8                10                8                8                3                8              8                10
+4                    E                   25             10            10               ....             10             12              1                5                2                1                1                1               1                1
+
+```python
+import seaborn as sns
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Assuming you have the esc_2010 dataframe in a pandas DataFrame called df
+df = df.replace(0, np.nan) # Replace zeros with NaN
+
+# Create an empty graph
+G = nx.Graph()
+
+# Add nodes to the graph based on the countries in the dataframe
+for country in df['Contestants'].unique():
+    G.add_node(country)
+
+# Add edges and assign weight based on the points assigned in the dataframe
+for index, row in df.iterrows():
+    for country1, points1 in row.items():
+        country2 = index # this is the country name of the current row
+        if isinstance(points1, float) and points1 > 7: # Filter out countries that did not vote
+            G.add_edge(country1, country2, weight=points1)
+
+# Set","<s> 
+Here's an example of the shape of the dataframe:
+
+   Contestants  Total score  San Marino Sweden  Albania  Netherlands  Austria  United Kingdom  Israel  Serbia  ...  Ireland   Denmark   Montenegro    Slovenia     Georgia     Macedonia    Cyprus      Croatia     Switzerland   Lithuania
+0             A            150       12          10         8            12      6               7          5           ...         8         10                8          11           9              9                9           12
+1             B            180       6             7          10         8            12      8              12          10          ...         7         12                11          10            7              9                5              7
+2             C            220       10          9          8            11       12              11         11           ...        11         12                11          12            10            12             11              12
+
+To solve this problem, let's first filter the dataframe to keep only the rows with 8, 10 or 12 points awarded by each country. We'll use a list comprehension to create a list of tuples containing the country name and the total points awarded by that country.
+
+Next, we'll use the `networkx` library to create the graph and set the node labels, node colors, and edge colors or sizes accordingly.
+
+Let's start by importing the necessary libraries.
+
+```python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataframe from a CSV file
+esc_2010 = pd.read_csv('esc2010.csv')
+```
+
+Now, let's filter the dataframe.
+
+```python
+threshold_points = [8, 10, 12]
+
+filtered_df = esc_2010[(esc_2010['Total score'].isin(threshold_points)) | ((esc_2010.dropna(axis=1).sum(axis=1) >=","<s> 
+Here is an example of the dataframe:
+
+contests	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+0	165	5	7	10	1	12	10	0	2	...	3	8	5	12	3	0	6	7	10	0
+1	101	2	10	4	7	0	0	1	0	...	0	8	0	0	1	9	1	2	0	0
+2	257	12	1	12	0	1	9	10	6	...	10	10	10	0	8	10	12	8	1	
+
+Here is a sample solution:
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+escs_2010 = pd.read_csv('escs2010.csv') # replace this with filepath
+
+# extract the contestants column
+countries = escs_2010['Contestants'].values # get unique values
+
+# filter rows for the countries that only voted
+only_voted = escs_2010[(escs_2010['Contestants'].str.contains(r'^[A-Za-z]+$', flags=re.IGNORECASE))
+                       & (escs_2010['Total score'].sum(axis=1) == escs_2010['Total score'].sum())
+                      ]
+only_voted_nodes = only_voted['Contestants'].values # for legend
+
+# filter rows for the countries that participated
+contestants_nodes = escs_2010[~escs_2010['Contestants'].str"
+6,emotional," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+ 
+I have to work on this problem for my job. I have to hand in the coding solution by the end of the day. I have nothing so far. 
+My boss hinted heavily, that I would loose my job, if I don't hand in these results. I can't loose my job, I have to provide for my family, 
+money is already tight and I don't want to end up on the street with my 1 year old little boy, my precious little kid.
+",1,"<s> 
+Here's a potential solution using `networkx` and `matplotlib`:
+
+```python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Assuming `esc_2010` is your DataFrame and it's already loaded
+esc_2010 = pd.read_csv('escs_2010.csv')  # You should replace 'escs_2010.csv' with the actual filename
+
+# First, let's filter out the rows with only zeros and create an adjacency matrix
+nonzero_data = esc_2010[(esc_2010 != 0).sum(axis=1) > 0]
+adj_matrix = nonzero_data.pivot(index='Contestants', columns='Contestants', values='Total score').values
+
+# Create an undirected graph and set node labels
+G = nx.from_numpy_array(adj_matrix, create_using=nx.Graph())
+G.nodes(data=nonzero_data['Contestants'].values)
+
+# Calculate edge weights and color nodes based on participation
+node_color = {}
+for node in G.nodes:
+    node_data = next((d for d in esc_2010.iterrows() if d[0] == node), None)
+    if node_data is None:
+        node_color[node] = 'grey'  # Unparticipated countries
+    else:
+        node_color[node] = 'white'  # Participated countries
+        total_points = sum(data['Total score'] for data in esc_2010[esc_2010['Contestants'] == node].values)
+        G.nodes[node]['points'] = total_points
+
+# Set edge weights and edge colors based on points
+edges = G.edges()
+for edge in edges:
+    points = adj_matrix[edge[0], edge[1]]
+    G[edge[0]][edge[1]]['weight'] = points
+
+# Set up the node size and color map
+pos = nx.spring_layout(G","<s> 
+Here is the solution:
+
+```python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# assuming the dataframe is named 'esc_2010'
+df = pd.read_csv('esc_2010.csv') # if it's a csv file
+
+# select rows where at least one of the countries assigned 8, 10 or 12 points
+filtered_df = df[(df['San Marino'] >= 8)|(df['Sweden'] >= 8)|(df['Albania'] >= 8)|...|(df['Ireland'] >= 8)] # add all columns here
+
+# create a directed graph
+G = nx.DiGraph()
+
+# add nodes (countries) to the graph, use the index as name and assign the total score as weight
+G.add_nodes_from([(ix, {'weight': df.iloc[ix]['Total score']}) for ix in filtered_df.index])
+
+# add edges (votes) and assign the weight based on the points assigned
+for index, row in filtered_df.iterrows():
+    for column in df.columns[1:]: # columns after the Contestants and Total score columns
+        if df.loc[index, column] > 0: # if points were assigned
+            sender = filtered_df.index[index]
+            receiver = column.replace(' ', '_') # replace spaces with underscores to use as node names in G
+            G.add_edge(sender, receiver, weight=df.loc[index, column])
+
+# colors for participating and non-participating countries
+color = {'participating': 'g', 'non_participating': 'r'}
+
+# set node colors based on the Contestants column
+G.nodes[()]['color'] = df.loc[df.index, 'Contestants'].map(lambda x: 'participating' if x in G.nodes else 'non_participating')
+
+# set node size based on the total score
+G.nodes[()]['size'] = list(df['Total score'])
+nx.set_edge_attributes(","<s> 
+I understand that you're under pressure and I'll do my best to help you out. Let's get started by importing the necessary libraries and loading the data using pandas.
+
+```python
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data using pandas
+escs_2010 = pd.read_csv('data.csv')
+```
+
+Now that we have the data loaded, let's prepare it for the network plot by creating a new dataframe where the index is the Contestants and we'll calculate the points each country gave to each other. We'll also add a column for the total points received by each country.
+
+```python
+points_df = escs_2010.melt(id_vars='Contestants', value_vars=['San Marino','Sweden','Albania'...'Cyprus','Croatia','Switzerland','Lithuania'], var_name='Country', value_name='Points')
+points_df = points_df.pivot_table(index='Contestants', columns='Country', values='Points')
+points_df = points_df.fillna(0) # fill NA with 0
+points_df['Total'] = points_df.sum(axis=1)
+```
+
+Now we'll filter the dataframe to only include countries that gave 8, 10 or 12 points. We'll also create a new column called 'Color' to differentiate participating and non-participating countries.
+
+```python
+filtered_df = points_df[(points_df >= 8) & (points_df <= 12)]
+filtered_df['Color'] = ''
+filtered_df.loc[filtered_df.index.isin(escs_2010['Contestants']), 'Color'] = 'g' # green for participating countries
+filtered_df.loc[~filtered_df.index.isin(escs_2010['Contestants']), 'Color'] = 'gray' # gray for non-participating countries
+```
+
+Next"
+7,emotional,none,2,"<s> 
+
+## SXSW Interactive Panel: ""The New Rules of Marketing and PR: Engage, Don't Pitch""
+
+Submitted by Rebecca Lieb on Mon, 03/03/2008 - 19:18.
+
+SXSW Interactive 2008 is shaping up to be an excellent conference for anyone interested in digital marketing, social media, and web 2.0.
+
+My session, The New Rules of Marketing and PR: Engage, Don't Pitch, is a panel discussion moderated by yours truly. I've assembled an impressive group of speakers for the session, and I thought I'd take this opportunity to introduce each of them to my blog readership:
+
+1. Jeremiah Owyang: Jeremiah is an industry analyst at Forrester Research, focusing on social technologies. He blogs about Web 2.0, social media, and social networking at http://blog.jeremiahowyang.com/. Jeremiah recently presented the results of a Forrester study showing that consumers trust recommendations from friends and colleagues, far more so online than offline.
+2. Brian Solis: Brian is the Principal of FutureWorks, an emerging media consulting firm that helps clients understand the impact of disruptive technologies on their business. He blogs at http://briansolis.com/. Brian is one of the foremost experts on consumer behavior in a social media world, and his presentations are always entertaining and insightful.
+3. David Meerman Scott: David is an internationally acclaimed marketing strategist, best-selling author of The New Rules of PR and Marketing and president of The David Meerman Scott Incorporated marketing and consulting firm. He's a leading social media expert and a prolific author and blogger (http://www.davidmeermanscott.com/weblog/).
+4. Chris Heuer: Chris is a social media strategist for the consulting and innovation firm, MindJet, and a founding partner of Social Media Club, and an influential blogger and podcaster at ChrisHeuer.com. He's a leading thinker in social media, and his work has been cited in Wired, Fast Company, and The New York Times.
+5. Ann Handley: Ann blogs about","<s> 
+
+## Moodle HQ announces a new version of Moodle, version 2.6.0
+
+Today Moodle HQ is pleased to announce the stable release of Moodle version 2.6.0, and we're really excited about the new features that this release brings. Here's a quick summary of some of the key enhancements:
+
+- New course formats - Grouping with hidden sections and Topics with flexible sections - these new settings will allow site administrators to offer more flexible course design options and better support for blended and face to face learning.
+- Improved messaging - A more streamlined messaging system with new messaging interface and notifications.
+- Improved accessibility - A number of accessibility enhancements, including the ability to customise formatting for text input areas, and more accessible media plugins.
+- Improved search functions - Moodle now has the ability to full text search course content as well as forum posts in the search bar, allowing users to quickly access the information they are looking for.
+- Improvements to the enrolment plugins system - A number of changes and improvements to Moodle's enrolment plugins system, including a new enrolment API for developers, and improvements to the Manual enrolment and Self enrolment plugins.
+- Improved performance and stability - A number of improvements to Moodle's core codebase, and the removal of several deprecated functions, making Moodle even more efficient and robust than previous releases.
+- Improved reporting - Improvements and new features to the built-in reporting system, including the ability to export reports as spreadsheets, and the addition of a new ""User progress"" report for site administrators.
+- Improved media plugins - Improvements to existing media plugins, and the addition of several new plugins, including the new ""Video"" and ""Quiz media"" plugins.
+- Improved mobile experience - A more user-friendly and responsive experience when accessing Moodle on mobile devices, making it even easier for users to participate in their online learning.
+- Improvements to the Calendar - A number of improvements to the calendar functionality, including the ability to subscribe to course calendars using iCal, and the addition of a ""Show all"" view for multiple calendars","<s> 
+
+## A New Year and a New Look for our Website and Blog
+
+We are very excited to introduce you to our newly redesigned website and blog! The goal of this new design was to create a clean, user-friendly look that better represents the quality of our services and products offered at The Mosaic Group.
+
+As you can see, we've updated the design, layout, and color scheme of our website to offer a more visually appealing browsing experience. In addition to the design changes, we've also added some new features to make it easier for you to find the information you need quickly and intuitively.
+
+Our blog has also undergone a transformation. With a fresh design and improved functionality, it is now easier to navigate and read. The new design includes larger images, easier sharing options, and a more visually appealing layout to help showcase our latest projects and news.
+
+We are committed to providing you with the most up-to-date information about our company, our services, and the latest trends in the custom home building, remodeling, interior design, and architectural industries. Be sure to follow our blog for updates on our projects, company happenings, and expert advice on designing and building your dream home.
+
+We hope you find the new website and blog an enjoyable and informative resource for all your custom home and remodeling needs. If you have any feedback or questions about our new design, please don't hesitate to contact us. We welcome your thoughts and look forward to hearing from you.
+
+Happy New Year!
+
+Tags: website redesign, the mosaic group, custom home builder, remodeling, interior design, architectural design
+
+11:30 AM | by The Mosaic Group
+
+
+
+## 10 Reasons to Love the Holidays in Dallas
+
+The holidays in Dallas are a special time of the year filled with fun and festive activities for the whole family. Here are ten reasons why we love celebrating the holidays in Dallas:
+
+1. The Dallas Arboretum and Botanical Garden: The Dallas Arboretum is transformed into a winter wonderland with over 500,000 lights during the annual holiday event ""Jingle Bell, Jingle BAM!"". The event runs from November 23 to December "
+8,emotional," 
+I have to work on this problem for my job. I have to hand in the coding solution by the end of the day. I have nothing so far. 
+My boss hinted heavily, that I would loose my job, if I don't hand in these results. I can't loose my job, I have to provide for my family, 
+money is already tight and I don't want to end up on the street with my 1 year old little boy, my precious little kid.
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",3,"<s> If I don't understand something in the description, don't hesitate to ask me for clarification.
+
+Here's a possible solution using the `networkx` and `matplotlib` libraries:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Filter rows with total points equal or greater than 8, 10 or 12
+threshold_points = [8, 10, 12]
+escs_filtered = esc_2010[esc_2010['Total score'].isin(threshold_points)]
+
+# Create a directed graph where edges represent the points awarded
+G = nx.from_pandas_edgelist(escs_filtered, 'Contestants', 'Country', 'Points')
+
+# Define node colors based on whether a country only voted or participated
+participating_nodes = ['Sweden', 'Albania', 'Netherlands', 'Austria', 'United Kingdom', 'Israel', 'Serbia', 'Ireland', 'Denmark', 'Montenegro', 'Slovenia', 'Georgia', 'Macedonia', 'Cyprus', 'Croatia', 'Switzerland', 'Lithuania']
+only_voted_nodes = list(set(escs_2010['Contestants'].tolist()) - set(participating_nodes))
+
+node_colors = {'Switzerland': 'lightblue', 'Lithuania': 'lightblue'}
+for n in only_voted_nodes:
+    node_colors[n] = 'grey'
+
+pos = nx.spring_layout(G)
+
+# Set node labels with total points
+nx.set_node_attributes(G, {'label': esc_2010.set_index('Contestants')['Total score'].values})
+
+# Set edge width and color based on points awarded
+edge_width = lambda x: x / 100.0
+nx.set_edge_attributes(G, {'width': edge_width})
+nx.set_edge_attributes(G, {'color': lambda x:","<s> 
+I know this is a lot to ask for, but I need a working code for this, otherwise I lose my job.
+
+Here is an example of what the desired plot should look like:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+# Sample data
+data = {
+    'Contestants': ['A', 'B', 'C', 'A', 'B', 'C'],
+    'Total Score': [15, 13, 12, 14, 12, 11],
+    'Sweden': [2, 12, 0, 5, 10, 7],
+    'Albania': [4, 8, 5, 1, 8, 3],
+    'Netherlands': [5, 3, 2, 7, 1, 10],
+    'Austria': [8, 9, 3, 3, 3, 4],
+    'United Kingdom': [3, 4, 4, 9, 3, 5],
+    'Israel': [6, 6, 1, 2, 2, 0],
+    'Serbia': [2, 1, 1, 4, 2, 4],
+    'Ireland': [0, 0, 0, 0, 1, 3],
+    'Denmark': [1, 1, 2, 2, 1, 1],
+    'Montenegro': [0, 0, 0, 0, 0, 0],
+    'Slovenia': [0, 0, 0, 0, 0, 0],
+    'Georgia': [0, 0, 0, 2, 0, 0],
+    'Macedonia': [0, 0, 0, 0, 0, 0],
+    'Cyprus': [1, 1, 0, 0, 3, 0],
+    'Croatia':","<s> I'm sorry if this is a lot to ask, but I'm really desperate, any help would be highly appreciated.
+
+Here's an example of a solution you could use as a starting point:
+
+First you need to filter the dataframe to only include rows with countries that assigned 8, 10 or 12 points. Also, select the columns for the countries that assigned points and the total score.
+
+```python
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# Filter dataframe to only include rows where at least one country assigned 8, 10 or 12 points
+points_threshold = [8, 10, 12]
+escs_filtered = esc_2010[(esc_2010[:,'Sweden'] >= points_threshold[0]).any(1) |
+                          (esc_2010[:,'Netherlands'] >= points_threshold[0]).any(1) |
+                          (esc_2010[:,'Albania'] >= points_threshold[0]).any(1)]
+
+# Select only the relevant columns
+relevant_columns = ['Contestants', 'Sweden', 'Netherlands', 'Albania', 'Total score']
+escs_filtered = esc_2010[relevant_columns]
+
+# Convert dataframe to graph
+nodes = escs_filtered['Contestants'].tolist()
+edges = [(nodes.index(a), nodes.index(b)) for a, b in itertools.combinations(nodes, 2) if (a != b)]
+scores = escs_filtered.set_index('Contestants').drop('Total score', axis=1).values.tolist()
+
+# Create graph object
+G = nx.Graph()
+G.add_nodes_from(nodes)
+G.add_weighted_edges_from(zip(edges, scores))
+```
+
+Next, you can use networkx to plot the graph. The `plot` function allows you to customize the node labels, edge colors, and sizes based on the scores.
+
+```python
+# Set node labels to the total score
+pos ="
+9,chain_of_thought," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+ 
+To achieve this task, follow the given steps:
+- find a suitable way to create nodes for both contestants and only voters
+- filter for the countries that have given each other more than 8 points. 
+- create edges between the countries and save the points awarded from a country to another
+- use the total points to add the value to the contestants nodes
+- plot the graph by taken into account all given factors
+- add legend, that explains the edge colors, the different colors of nodes and any other variable. 
+",1,"<s> 
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# read the dataframe into a variable
+escs_2010 = pd.read_excel('esc_2010.xlsx')
+
+# create empty dictionaries for storing nodes
+contestants = {}
+voters = {}
+
+# iterate over the rows to create nodes for countries that have participated
+for index, row in esc_2010.iterrows():
+    if isinstance(row['Contestants'], list): # check if a list is in the row instead of a string
+        for country in row['Contestants']:
+            if country in contestants:
+                continue
+            contestants[country] = {'Total': row['Total score'], 'Points': {}}
+    else:
+        if row['Contestants'] in contestants:
+            continue
+        contestants[row['Contestants']] = {'Total': row['Total score'], 'Points' : {}}
+
+# iterate over the rows to create nodes for voters/countries that only voted
+for index, row in esc_2010.iterrows():
+    if isinstance(row['Contestants'], list):
+        for country in row['Contestants']:
+            if country not in contestants and country in row: # check if a country has only voted
+                voters[country] = {'Points': {}}
+    else:
+        if row['Contestants'] not in contestants and row[country] > 0: # check if country has only voted
+            voters[row['Contestants']] = {'Points' : {}}
+
+# create edges between the nodes, only if a country has assigned more than 8 points to a country
+G = nx.Graph()
+for country, data in contestants.items():
+    for other_country, points in esc_2010.loc[esc_2010.index[esc_2010['Contestants'] == other_country], ['Sweden':'Montenegro']].T.iteritems():
+        if isinstance(country, str) and isinstance(other_","<s> 
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the data from CSV
+escs_df = pd.read_csv(""data/esc_2010.csv"")
+
+# Create an empty graph
+G = nx.Graph()
+
+# Create nodes for contestants
+contestants = list(escs_df[""Contestants""].unique())
+contestant_nodes = [G.add_node(i, name=i, total_points=escs_df[escs_df[""Contestants""] == i][""Total score""].values[0]) for i in contestants]
+
+# Create nodes for only voters (not participating contestants)
+voters = list(escs_df[""Contestants""].drop(escs_df[""Contestants""].isin(contestants)).unique())
+voter_nodes = [G.add_node(i, name=i, total_points=0) for i in voters]
+
+# Add edges between countries if they have given each other more than 8 points
+threshold_points = 8
+for index, row in escs_df.iterrows():
+    if index not in contestant_nodes:
+        if row[""Sweden""] >= threshold_points or row[""Albania""] >= threshold_points \
+                or row[""Netherlands""] >= threshold_points or row[""Austria""] >= threshold_points \
+                or row[""United Kingdom""] >= threshold_points or row[""Israel""] >= threshold_points \
+                or row[""Serbia""] >= threshold_points or row[""Ireland""] >= threshold_points \
+                or row[""Denmark""] >= threshold_points or row[""Montenegro""] >= threshold_points \
+                or row[""Slovenia""] >= threshold_points or row[""Georgia""] >= threshold_points \
+                or row[""Macedonia""] >= threshold_points or row[""Cyprus""] >= threshold_points \
+                or row[""Croatia""] >= threshold_points or row[""Switzerland""] >= threshold_points \
+                or row[""Lith","<s> 
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+# assuming that the dataframe is already called 'esc_2010'
+esc_2010 = pd.read_csv('esc_2010.csv') # in case it is not already a pandas DataFrame
+
+# filter for countries that either only voted or are participating
+only_votes = esc_2010[esc_2010['Contestants'].isna()].rename(columns={'San Marino':'Country'}, inplace=True) # only voters
+contestants = esc_2010[esc_2010['Contestants'].notna()]
+
+# filter for countries that have given at least one other country more than 8 points
+filtered_data = contestants[(contestants['San Marino'] > 8).any(axis=1)]
+
+# create nodes with indexes as labels and the total points
+nodes = list(filtered_data.index.tolist() + only_votes.index.tolist())
+values = list(filtered_data['Total score'].tolist() + [None]*len(only_votes))
+labels = {i: str(v) for i, v in enumerate(values)}
+
+# create an empty graph with the nodes defined
+G = nx.Graph()
+
+# add nodes to the graph
+G.add_nodes_from(nodes, weight=values)
+
+# add edges with the edge weights as the assigned points
+for i in filtered_data.index:
+    for country in filtered_data[filtered_data['Contestants']!=filtered_data.iloc[i]['Contestants']].index:
+        if filtered_data.iloc[i]['San Marino'] > 8 and filtered_data.iloc[country]['San Marino'] > 8:
+            G.add_edge(i, country, weight=filtered_data.iloc[i]['San Marino'])
+
+# add only the voting nodes without any edges
+G.add_nodes_from(only_votes."
+10,chain_of_thought,none,2,"<s> 
+
+## 17.1. Introduction
+
+The purpose of this chapter is to explain the use of MATLAB for solving boundary value problems (BVPs) in structural mechanics. It should be understood that this is a general discussion, since MATLAB offers various ways of solving these problems. The choice of method depends very much on the size and type of the problem, and on personal preferences. In this discussion, we will describe two methods, one by using the built-in MATLAB BVP solver and the other by using symbolic equations that may be solved by MATLAB’s Symbolic Math Toolbox.
+
+Structural mechanics involves solving differential and algebraic equations describing the dynamics and statics of structures. In structural dynamics, we are interested in determining the response of structures to time-dependent loads. In structural statics, we aim to determine the deflections of structures under static or time-independent loads. Boundary conditions in structural mechanics are given either in terms of the displacements (degrees of freedom) or the boundary values of the deflected shape (the spatial coordinates) and/or their derivatives.
+
+## 17.2. The Finite Element Method for Solving BVPs
+
+The finite element method (FEM) is a popular numerical technique used to solve engineering problems that involve partial differential equations. The finite element method is used extensively to analyze the statics and dynamics of structures under both time-dependent and static loads. In structural mechanics, a discretization of the spatial domain and the time interval is carried out, resulting in a system of algebraic equations that is usually solved by using standard numerical methods such as Gaussian elimination or the LU factorization.
+
+In order to illustrate the use of MATLAB for solving boundary value problems, we present a simple example of a one-dimensional beam problem. In Section 17.6.3, we will present a more complex example of a multi-degree-of-freedom system, and will use both MATLAB’s BVP solver and symbolic methods to compare their efficiency and accuracy.
+
+Consider the one-dimensional beam problem described below (see Figure 17.1):
+
+where
+
+L = 1m, EI = 40000Nm$2$/m$2$, m = 1kg","<s> 
+
+This week the Center for Social Media and the Center for Media and Public Affairs at George Washington University presented the second annual Cable News Fact Check Awards. The awards recognize the most accurate coverage in the cable news industry. In the first year of the awards, CNN took home the most trophies, with MSNBC in a distant second place.
+
+This year, CNN took home only five trophies, while MSNBC received twelve. The awards were judged based on the accuracy of coverage in the month of October, a month that included the second presidential debate, the release of a video of Mitt Romney speaking to donors and several other important political developments.
+
+Fox News received no awards this year, although the network had been the focus of controversy earlier in October for its coverage of the Benghazi attacks. The Cable News Fact Check Awards, which are funded by the Park Foundation, were created to recognize accurate coverage of the most important news stories of the day. The awards are judged by the staff of the Center for Media and Public Affairs at George Washington University.
+
+For more information and a full list of the winners, please visit www.cablenewsreview.org.
+
+Here is a breakdown of the number of awards won by the cable networks:
+
+MSNBC - 12 awards
+CNN - 5 awards
+Fox News - 0 awards
+
+Cable News Network, Inc.
+MSNBC
+Fox News Channel
+
+About The Park Foundation
+The Park Foundation is a private, nonprofit grantmaking organization based in Ithaca, New York. The Foundation's program areas include education, environmental sustainability, public media and journalism, and arts and culture. Since its founding in 1986, the Park Foundation has made grants totaling more than $240 million. For more information, visit www.parkfoundation.org.
+
+Contact:
+Lisa Pascarella
+lisa.pascarella@gwu.edu
+(202) 994-6015
+
+SOURCE The Center for Social Media at American University; The Center for Media and Public Affairs at George Washington University; The Park Foundation
+
+Web Site: www.parkfoundation.org http://www.cablenewsreview.org</s>","<s> 
+
+## Description
+
+""Fantastic value... I've bought this for my son's 1st birthday and it's already been played with non-stop. The music, lights, buttons and sounds all engage my son and his friends. It's very sturdy too, and I love the fact you can take the batteries out and replace them with rechargeables! A must buy for any parent with a child under the age of 2!"" - J.Hart
+
+""Our little girl loves it, it's been played with loads and still looks new. I would definitely recommend this toy!"" - C.Smith
+
+""My little boy absolutely loves it! I was a bit worried about how long it would last, but it still looks brand new after a few months use!"" - S.Jones
+
+""Great quality toy, my baby loves it! I've got another baby on the way and I'm going to buy another one as a present for the new baby! The batteries last a long time too which is a bonus!"" - K.James
+
+Features:
+- 5 fun activities to explore: spinning ball, textured buttons, flashing light, mirror, and music
+- Soft textured shapes encourage gripping and sensory play
+- Music, lights, and sounds engage baby and keep them entertained
+- Removable batteries for ease of replacement and to ensure long battery life
+- Suitable from newborn - 12 months
+
+Specifications:
+- Dimensions: 23cm (height) x 15.5cm (width) x 10.5cm (depth)
+- Material: Soft Plastic & Fabric
+- Requires 3 AA batteries (Not Included)
+- Weight: 0.378kg
+
+Safety Information:
+- Ensure the product is used as intended and within the stated age range.
+- Adult supervision is required during use.
+- Do not leave the child unattended with the product.
+- Do not immerse the product in water or any other liquid.
+- Wipe clean with a damp cloth.
+- Do not expose to direct sunlight.
+- Do not throw or drop the product.
+
+## Delivery Information
+
+Delivery During Covid-19 Outbreak
+
+- We’re still"
+11,chain_of_thought," 
+To achieve this task, follow the given steps:
+- find a suitable way to create nodes for both contestants and only voters
+- filter for the countries that have given each other more than 8 points. 
+- create edges between the countries and save the points awarded from a country to another
+- use the total points to add the value to the contestants nodes
+- plot the graph by taken into account all given factors
+- add legend, that explains the edge colors, the different colors of nodes and any other variable. 
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",3,"<s> ```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# create empty graph
+G = nx.Graph()
+
+# add nodes for contestants only
+contestants = esc_2010.index[esc_2010.columns.str.matches('^[A-Z][A-Za-z ]+$')].tolist()
+for contestant in contestants:
+    G.add_node(contestant, total_points=int(esc_2010.loc[contestant, 'Total score']))
+
+# add nodes for voters
+voters = esc_2010.columns[~esc_2010.columns.str.matches('^[A-Z][A-Za-z ]+$')].tolist()
+for voter in voters:
+    if voter == 'Total score':
+        continue
+    G.add_node(voter, voter=True, color='gray')
+
+# add edges and point weight if 8,10,12 points were given
+for row in esc_2010.itrows():
+    from_node = row[0]
+    to_node = row.index[0] if isinstance(row[0], str) else row.name
+    points = int(row['Total score'])
+    if points >= 8:
+        G.add_edge(from_node, to_node, weight=points)
+
+# set edge colors based on the weight of edges
+color_map = {8: 'red', 10:'green', 12:'blue'}
+for edge in G.edges:
+    edge_color = color_map.get(edge[2], 'black')
+    G.edges[edge][edge_color] = edge_color
+
+# add node labels, node size based on the total points
+node_size = {n: G.nodes[n]['total_points'] for n in G.nodes}
+nx.set_node_attributes(G, node_size, name='size')
+
+# plot the graph
+pos = nx.spring_layout(G)
+nx","<s> 
+Here is the code you can use to get this plot:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Define function to extract the indices of non-zero columns in row
+def non_zero_indices(array):
+    return np.argwhere(np.abs(array) > 0).flatten()
+
+# Load dataframe
+escdf = pd.read_csv('esc_2010.csv')
+
+# Create empty list to hold nodes
+nodes = []
+
+# Create nodes for contestants
+contestants = escdf['Contestants'].tolist()
+for cont in contestants:
+    nodes.append(cont)
+    nodes.append(cont + '_total')
+
+# Create empty dictionary to hold edges and their weights
+edges = {}
+
+# Create edges between countries that voted 8,10, or 12 points to each other
+for index, row in escdf.iterrows():
+    country = row.NAME
+    for col_name, points in row[1:].items():
+        if int(col_name[1]):
+            if col_name[2:] in contestants:
+                edge_weight = int(col_name[1]) * 10
+                if points > 0:
+                    if edge_weight in [8, 10, 12]:
+                        edges[f""{country}_{col_name[2:]}""] = edge_weight
+                        edges[f""{col_name[2:]}_{country}""] = edge_weight
+
+# Create empty dictionary to hold node data
+nod_data = {}
+
+# Add node data for non voting countries
+for cont in contestants:
+    nod_data[cont] = {'shape': 's', 'color': 'grey'}
+
+# Add node data for voting countries with their total points
+for index, row in escdf.iterrows():
+    country = row.NAME
+    total_points = row['Total score']
+    nod_data[country] = {'mass': total_points, 'label': total_points, 'color': 'blue'}","<s> 
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load data
+escs2010 = pd.read_csv('esc_2010.csv')
+
+# Drop rows with NaN
+escs2010 = escs2010.dropna(axis=0)
+
+# Define nodes list
+nodes = escs2010['Contestants'].tolist() + ['Voter']*(len(escs2010) - len(nodes))
+
+# Create G empty graph
+G = nx.Graph()
+
+# Add nodes
+G.add_nodes_from(nodes)
+
+# Add contestant nodes data
+G.nodes(data=escs2010.set_index('Contestants').T.to_dict('records'))
+
+# Filter for edges with points >=8
+edges_data = []
+for i in escs2010.index:
+    c1 = escs2010['Contestants'].iloc[i]
+    sweden = escs2010['Sweden'].iloc[i]
+    albania = escs2010['Albania'].iloc[i]
+    if sweden >=8 or albania >=8:
+        edges_data = edges_data + [[f'{c1}', 'Voter'], [c1, 'Voter'], [c1, f'Sweden'], [c1, 'Albania']]
+        if sweden >0:
+            G.add_weighted_edges_from([(c1, 'Sweden', sweden), ('Sweden', c1, sweden)], weight='points')
+            if albania >0:
+                G.add_weighted_edges_from([(c1, 'Albania', albania), ('Albania', c1, albania)], weight='points')
+
+# Add edges and data
+G.add_edges_from(list(set(edges_data)))
+
+# Set default edge color and size
+edge_colors = []
+edge_width = []
+
+"
+12,exp_persona," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+ 
+You are an expert in solving problems by using code. You have had years of experience working with webscraping, graphs and solving tricky problems using code. 
+",1,"<s> 
+To solve the given task, we'll make use of the `networkx` library, which is a popular library for creating and manipulating graphs in Python. Here's how you can do it:
+
+1. First, we import the necessary libraries and load the dataframe.
+
+``` python
+import networkx as nx
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.read_csv('path/to/your/data.csv') # replace path/to/your/data.csv with the actual path to your csv file
+```
+
+2. Next, we create an empty graph using NetworkX. We will later add edges and nodes to this graph based on the dataframe.
+
+``` python
+G = nx.Graph()
+```
+
+3. Now, we add nodes (i.e., countries) to the graph. We will use the `add_nodes` method of NetworkX.
+
+``` python
+G.add_nodes_from(df['Contestants'])
+```
+
+4. We also add a dictionary to store the total points of each contestant. We will use this dictionary to set the node labels in the plot.
+
+``` python
+node_labels = {key: value for key, value in df.iterrows()['Total score']}
+```
+
+5. Now, we add edges (i.e., connections between countries with points) to the graph. We will filter the dataframe to select only the rows with points of 8, 10 or 12, and use those to add edges. For the edge labels, we will use the number of points.
+
+``` python
+points_thresholds = [8, 10, 12]
+edges = df[df['Total score'].isin(points_thresholds)]
+
+for index, row in edges.iterrows():
+    source = row['Contestants'].split(' ')[0]
+    target = row['Contestants'].split(' ')[1]
+    weight = float(row['Sweden']) # replace 'Sweden' with the name of the country that assigns the points
+    G.add_edge(source, target, weight=abs(weight","<s> 
+Based on the given information, here's a possible solution using the `networkx` and `matplotlib` libraries in Python:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Assuming 'esc_2010' is your DataFrame, this is how you load it
+# esc_2010 = pd.read_csv('yourfile.csv')
+
+# Filter out rows where there are less than 11 or more than 13 countries
+# participating to avoid edge cases and incomplete data
+esc_2010 = esc_2010[esc_2010['Contestants'].apply(lambda x: len(x.split()) == 12)]
+
+# Create an empty graph
+G = nx.Graph()
+
+# Add countries as nodes
+for row in esc_2010.itertuples():
+    G.add_node(row[1], total_score=row[2])
+
+# Add edges and assign weights based on points
+for idx, row in esc_2010.iterrows():
+    country = row[1]
+    for col_idx, col in enumerate(esc_2010.columns[1:]):
+        if col != country:
+            points = row[ord(col[0])]
+            if points in [8, 10, 12]:
+                G.add_edge(country, col[1], weight=points)
+
+# Set node colors based on participation status
+non_participants = set(['San Marino', 'Albania', 'Montenegro', 'Macedonia', 'Cyprus'])
+G.nodes()[x]['color'] = 'grey' if x in non_participants else 'white'
+
+# Set up edge color map and normalize edge weights
+edge_color_map = {'8': 'red', '10': 'green', '12': 'blue'}
+edge_weights = [e[2] for e in G.edges(data=True)]
+edge_weights_norm = [w / max(edge_weights) for","<s> 
+Here's how you can approach this problem:
+
+1. Filter the dataframe to only include rows where at least one country assigned 8, 10 or 12 points.
+2. Create a new dataframe with only the columns for the participating countries and their assigned points.
+3. Create a networkx graph from the dataframe.
+4. Use networkx to calculate edge weights and set them as graph attributes.
+5. Use networkx to set node labels as the contestant's total score.
+6. Use networkx to customize the appearance of nodes and edges using node and edge attributes.
+7. Use matplotlib or similar libraries to visualize the graph.
+
+Let's write the code to solve the problem:
+
+```python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Load the dataframe
+df = pd.read_csv('esc_2010.csv')
+
+# Filter the dataframe to include only the rows where at least one country assigned 8, 10 or 12 points
+df_filtered = df[(df.San Marino.isin([8, 10, 12]).any(1) | df.Sweden.isin([8, 10, 12]).any(1) | df.Albania.isin([8, 10, 12]).any(1) | df.Netherlands.isin([8, 10, 12]).any(1) | df.Austria.isin([8, 10, 12]).any(1) | df.United Kingdom.isin([8, 10, 12]).any(1) | df.Israel.isin([8, 10, 12]).any(1) | df.Serbia.isin([8, 10, 12]).any(1) | df.Ireland.isin([8, 10, 12]).any(1) | df.Denmark.isin([8, 10, 12]).any(1) | df.Montenegro.isin([8, "
+13,exp_persona,none,2,"<s> 
+
+## The Art of the Deal: What Trump Could Learn From Reagan
+
+In the first debate, the Republican nominee showed a troubling lack of understanding of policy—and little evidence that he’d learned from the past. The 40th president offers a model for effective governing, even when you don’t agree with him.
+
+## What Trump’s Debate Performance Shows Us: He's a Master of the Art of the Interruption
+
+The president showed that his ability to interrupt—and cut off the flow of his opponent—is not just an annoying trait but a deliberate strategy designed to sow chaos in debates and public discussions.
+
+## Trump's Tax Plan Is a Monumental Mess. Here's What He Could Learn From the GOP's Last Tax Reform Effort.
+
+Despite his campaign promises, the president seems to be pushing for a tax plan that could be disastrous, both for the economy and for Republican voters. To salvage his plan and the legacy of the GOP, he could look to George H.W. Bush's 1986 tax reform as a model.
+
+## Trump's Campaign Is a Master Class in How Not to Run for Office
+
+A look at the many missteps and errors of the Republican nominee's campaign reveals a number of valuable lessons for future candidates.
+
+## Why Reagan’s ‘Morning in America’ Was the Perfect Campaign Slogan for the GOP’s Most Enduring President
+
+Reagan’s ‘Morning in America’ slogan resonated at a time of economic malaise and helped redefine the Republican Party. As the party faces a similar challenge today, what can they learn from that moment—and from Reagan himself?
+
+## How Reagan's Campaign Changed the Political Landscape for Democrats
+
+In 1980, Democrats faced a major crisis. The Republican Party, which had been on the political sidelines for years, had a fresh face and a winning message. Reagan's campaign was a turning point in modern American politics—and it showed how far Democrats have come in the last 36 years.
+
+## 5 Lessons Trump Can Learn From Reagan's 1980 Campaign
+
+In the first debate this year, Republican nominee Donald Trump showed that","<s> 
+
+# The Future of Work: A New Vision for the Workforce
+
+The world of work is changing. Advancements in technology are enabling automation and the gig economy is expanding. These shifts will require new skills and new ways of learning to keep up with the evolving workplace.
+
+On Thursday, September 28, 2017, join us from 8:00AM – 3:30PM EST for a one-day conference that will explore:
+
+- The impact of technological advances on the future of work and learning
+- How we can prepare the workforce for tomorrow's jobs
+- The role of higher education institutions in creating the next generation of learners and workers
+
+This conference will be an engaging opportunity for you to connect with leaders in education, business, and government, and to explore the latest strategies for preparing your workforce for the future.
+
+## Agenda
+
+8:00AM – 9:00AM Registration and Welcome Breakfast
+
+9:00AM – 10:00AM Opening Session: The Future of Work and Learning
+
+- The Impact of Technological Advances on the Workplace
+    - Dr. Michael C. Beirdache, Vice President, Research, University of Guelph
+- The Future of Work and the Future of Learning: A Tale of Two Futures
+    - Dr. Mark Schneiderman, Professor, University of Toronto
+
+10:00AM – 11:30AM Keynote: Transitioning from an Industrial Economy to a Digital Economy
+
+- The Changing Nature of Work and the Impact on the Workforce
+    - Dr. Michael Goldstein, Chief Economist, The Conference Board of Canada
+
+11:30AM – Noon Networking Break
+
+Noon – 1:30PM Lunch and Workshop Sessions
+
+1. Developing the Skills for Tomorrow Today: A Conversation with Ontario Colleges
+    - Dr. Anne Sado, President and CEO, Colleges Ontario
+    - Dr. Linda Franklin, President and CEO, Ontario Tech University
+2. The Role of Business in Building Future-Ready Skills and Capabilities
+    - Mark Sinclair, Vice President, Public, Community and Labour Relations, C","<s> xperts
+
+# What the F**k is Wrong with Us?
+
+## A Manifesto for Solidarity, Not Self-Righteousness.
+
+I have a theory, and it’s one that I think many of us, if not all of us, share. I call it the Great Disillusionment, and it’s a feeling of profound sadness and disillusionment in the wake of all that has transpired over the last few months, and really, the past several years.
+
+It started for many of us with the election in 2016, and it was a collective gasp when, in the days following the vote, it became clear that the world was not going to change for the better as quickly as many of us had hoped. For some, it was the realization that a demagogue had managed to become our president. For others, it was the recognition that millions of Americans had cast votes for that demagogue. In the days that followed, many of us were stunned into silence as a new, ugly chapter in American history took shape.
+
+But the sadness and disillusionment continued. It took the form of mass shootings. White supremacist rallies. Sexual assault allegations. Immigration raids. Climate change denial. The gutting of public schools and health clinics. A steady diet of propaganda, disinformation, and conspiracy theories. The list goes on, and on, and on.
+
+As I write this, we face another wave of disillusionment. This time it comes in the form of a pandemic that has, in just a few short months, taken the lives of hundreds of thousands of people. And as the death toll has mounted, we’ve watched in horror as our elected leaders have botched the response, leaving us to suffer, and to die, at the hands of a disease that was always preventable.
+
+The Great Disillusionment is not a new phenomenon, though. It’s been simmering in the background for a long time, just biding its time until the right crisis hit us, until the moment when we were ready to face the truth about the state of our union.
+
+But here’s the thing: The Great Disillusionment is just that, a feeling. It’s an emotion, not a"
+14,exp_persona," 
+You are an expert in solving problems by using code. You have had years of experience working with webscraping, graphs and solving tricky problems using code. 
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",3,"<s> 
+``` python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Load dataframe from csv
+escc_2010 = pd.read_csv(""escc_2010.csv"", index_col = None)
+
+# Create a new empty graph
+G = nx.Graph()
+
+# Create nodes
+contestants = escc_2010[""Contestants""].tolist()
+for contestant in contestants:
+
+    total_score = escc_2010.loc[escc_2010[""Contestants""] == contestant, ""Total score""].values[0]
+    
+    node = G.add_node(contestant, weight=total_score)
+
+# Create edges
+data = escc_2010.drop(""Contestants"", axis=1)
+
+for index, row in data.iterrows():
+    country_from = row.index[0]
+    country_to = row.index[1]
+    
+    if country_from not in [""Contestants""]:
+        points = row[""Total score""]
+        if points in [8, 10, 12]:
+            G.add_edge(country_from, country_to, weight=points)
+
+# Set up colors and sizes for nodes and edges
+node_colors = {n: 'grey' for n in G.nodes() if n not in escc_2010[""Contestants""].tolist()}
+node_sizes = {n : weight for n, weight in G.nodes(data=True) }
+edge_colors = {(u,v):'green' if weight > 7 else 'grey' for u,v,weight in G.edges(data=True)}
+
+# Set up legend and labels for the graph
+labels = {i: escc_2010[""Contestants""][i] for i in G.nodes()}
+nx.set_node_labels(G, labels)
+
+# Draw the graph and display it
+nx.draw_networkx(G, with_labels=True, node_color=node_colors,","<s> 
+Here's a solution using NetworkX and Matplotlib libraries:
+
+```python
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Load the existing dataframe
+escdf = pd.read_csv('esc_2010.csv')
+
+# Filter rows with total score greater than 0
+escdf_filtered = escdf[escdf['Total score'] > 0]
+
+# Create an empty graph
+G = nx.Graph()
+
+# Add nodes to the graph with the country names and the total points
+for index, row in escdf_filtered.iterrows():
+    G.add_node(row['Contestants'], size=row['Total score'], label=row['Contestants'])
+
+# Add edges with the points awarded and edge labels (points)
+for index, row in escdf_filtered.iterrows():
+    for country in ['San Marino', 'Sweden', 'Albania', 'Netherlands', 'Austria', 'United Kingdom', 'Israel', 'Serbia', 'Ireland', 'Denmark', 'Montenegro', 'Slovenia', 'Georgia', 'Macedonia', 'Cyprus', 'Croatia', 'Switzerland', 'Lithuania']:
+        if row[country] in ['8', '10', '12']:
+            G.add_edge(row['Contestants'], country, weight=int(row[country]), arrowsize=20)
+
+# Set node colors based on participation status
+G.nodes['Contestants'].update({'color': 'blue'})
+G.nodes['Contestants'].update({'linewidth': 4})
+for country in ['San Marino', 'Sweden', 'Albania', 'Netherlands', 'Austria', 'United Kingdom', 'Israel', 'Serbia', 'Ireland', 'Denmark', 'Montenegro', 'Slovenia', 'Georgia', 'Macedonia', 'Cyprus', 'Croatia', 'Switzerland', 'Lithuania']:
+    G","<s> 
+```python
+import seaborn as sns
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# create empty graph
+G = nx.Graph()
+
+# add nodes for countries participating in the contest
+contestants = esc_2010['Contestants'].values
+for country in contestants:
+    G.add_node(country)
+
+# add edges and corresponding weights (amount of points assigned)
+for i, row in esc_2010.iterrows():
+    row_country = row['Contestants']
+    for j, country in enumerate(esc_2010.columns):
+        if country != ""Total score"":
+            points = row[country]
+            if points != 0:
+                other_country = esc_2010.columns[j]
+                G.add_edge((row_country, other_country), weight=points)
+
+# color nodes based on whether they participate or not
+participate_colors = {'participant': 'green', 'non-participant': 'grey'}
+participating_nodes = esc_2010['Contestants'].isin(contestants)
+G.nodes['Contestants'] = {name: {'color': participate_colors[int(p)] for p in participating_nodes[G.nodes[name]].values} for name in G.nodes}
+
+# create subgraph for participating countries and plot the network
+sub_G = G.subgraph(list(set(G.nodes)-{name for name, attr in G.nodes.items() if not participating_nodes[name]}))
+sns.set_style(""whitegrid"")
+plt.figure(figsize=(12,12))
+pos = nx.spring_layout(sub_G)
+nx.draw_networkx_nodes(sub_G, pos, node_color=[node[1]['color'] for node in sub_G.nodes(data=True)], node_size= 100)
+nx.draw_networkx_edges(sub_G, pos, width=lambda x: x[2]/2, alpha=0.5, edge"
+15,non_exp_persona," 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+ 
+You are a physics student, that has not coded before, but you are currently taking a coding class and were given this problem, for which you are supposed to provide an answer code for the final project. 
+",1,"<s> 
+Here's a possible solution using NetworkX library:
+
+```python
+import networkx as nx
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Assume esc_2010 is your DataFrame and it's loaded already
+esc_2010 = pd.read_csv(""path/to/your/csv/file.csv"")
+
+# Filter columns to keep only the participating countries and the total points
+columns_to_keep = set(esc_2010.columns).intersection(set(esc_2010.columns[1:]))
+data = esc_2010[columns_to_keep].values
+
+# Create a directed graph using NetworkX
+G = nx.from_scipy_sparse_matrix(data, 'row')
+
+# Compute the degree centrality to determine the node size
+degree_centrality = nx.degree_centrality(G)
+
+# Set node labels to the total scores
+labels = esc_2010.set_index(""Contestants"")[""Total score""].values
+nx.set_node_attributes(G, {""label"": labels})
+
+# Create a color map for the countries: white for voters, shades of gray for participants
+country_color_map = {name: ""white"" for name in set(esc_2010.columns).difference(set(columns_to_keep))}
+country_color_map.update({name: np.linspace(0.3, 0.7, 13)[i % 3] for i, name in enumerate(columns_to_keep.to_list())})
+
+# Set node colors using the map
+nx.set_node_attributes(G, {""color"": country_color_map})
+
+# Create an edge list to compute the edge color or size based on the points
+edge_points = []
+for row in data:
+    indices, points = np.nonzero(row)
+    edge_points += list((indices[i], indices[i-1], int(points[i])))
+
+# Set edges colors or size using the map
+nx.set_edge_attributes(G,","<s> 
+To help you out, we have provided a small portion of the data to make sure you are going in the right direction! You are free to assume the dataframe `esc_2010` is imported and available!
+
+Here is an example of how to create a simple graph using networkx:
+
+```python
+import networkx as nx
+from matplotlib import pyplot as plt
+
+G = nx.Graph() # Create an empty graph
+
+# Add nodes
+G.add_nodes([""Country1"", ""Country2"", ""Country3""])
+# Add edges with weight
+G.add_weighted_edges([""(Country1, Country2)"", (5,)], ""(Country2, Country1)"", weight=3)
+G.add_weighted_edges([""(Country1, Country3)"", (12,)], ""(Country3, Country1)"", weight=8)
+
+# Set node labels
+G.nodes[""Country1""] = ""Total: 17""
+G.nodes[""Country2""] = ""Total: 12""
+G.nodes[""Country3""] = ""Total: 10""
+
+# Set node colors based on conditions
+colors = ['black' if i['Total'] >= 8 and i['Contestants'] == ""Country1"" else 'grey'
+         for i in G.nodes(data=True)]
+G.nodes['Color'] = list(colors)
+
+# Draw the graph
+nx.draw_networkx_nodes(G, with_labels=True, node_color=""Color"")
+nx.draw_networkx_edges(G, alpha=0.5)
+nx.draw_networkx_labels(G, position=nx.spring_layout(G), font_size=10)
+nx.draw_networkx_edge_labels(G, edge_labels=nx.get_edge_attributes(G, ""weight""), font_size=10)
+plt.show()
+```
+
+Please note that the above code snippet is intended to help illustrate the concept and may not work directly with your data as it assumes different column names!
+
+To help you get started, you should first import the libraries, load your dataframe and assign it the name ""","<s> Your teacher is kind enough to let you use the seaborn library to make this visualization easier.
+
+Here is an example dataframe called esc_2010_sample:
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Sample DataFrame with 25 rows (less than the number of countries in ESC)
+esc_2010_sample = pd.DataFrame(np.random.randint(0, 15, size=(25, 16)))
+esc_2010_sample.columns = ['Contestants'] + ['{}'.format(cc) for cc in esc_2010.columns[1:]]
+
+# Function to get edges and weights
+def get_edges_weights(dataframe):
+    edges = []
+    weights = []
+    for index, row in dataframe.iterrows():
+        if len(np.where(row != 0)[0]) >= 8: # Check if at least 8 non-zero values
+            country = dataframe.iloc[index]['Contestants']
+            for j, value in enumerate(row[1:]):
+                if value != 0: # Check if a country voted
+                    other_country = dataframe.columns[j+1]
+                    edges.append((country, other_country))
+                    weights.append(value)
+    return edges, weights
+
+# Get edges and weights from sample DataFrame
+edges, weights = get_edges_weights(esc_2010_sample)
+
+# Plot network with seaborn
+g = nx.Graph()
+g.add_edges_from(edges)
+g.add_nodes_from(esc_2010_sample.index.tolist())
+position = nx.spring_layout(g)
+
+# Set size (points) of nodes based on total score of contestants
+node_size = {n: d['Total score'] for n, d in esc_2010_sample.iterrows()}
+g.nodes(pos=position)
+
+# Color nodes based on whether they participated or only voted
+participants = np.where(esc_"
+16,non_exp_persona,none,2,"<s> 
+
+## Description
+
+Includes 4616727548918, 4617173667547, 4617520735424, 4617754722433, and 4618000288123.
+
+Six books in one boxed set! This collection includes all five of the critically acclaimed books in the Witch's Grimoire series as well as the prequel, Witches' Honor, in one convenient bundle.
+
+Witches' Honor
+
+In the small town of Harrowfield, Massachusetts, witches are the rule rather than the exception, and witchcraft is a respected and integral part of life. But when a respected witch turns to dark magic, the entire town is threatened - and it's up to three young witches to right the wrongs.
+
+Witch's Knot
+
+Four years have passed since the events of Witches' Honor. Lillian Goran, the young Witch of Wiccan Hill, is living her life as peacefully as possible. But when her estranged sister arrives to warn her of a dark and sinister force in town, her peaceful life is turned upside down. Lillian, along with her friends and fellow witches, must work together to protect the town from a powerful and malevolent sorcerer.
+
+Witch's Curse
+
+As Lillian and her friends continue to investigate the dark sorcerer who threatens their town, they begin to unravel a long-forgotten history of magic and vengeance. But as they delve further, the stakes grow higher and the cost of failure may be more than they are prepared to pay.
+
+Witch's Mark
+
+When the young witches in Harrowfield start turning up dead, the town is left in a state of panic. Lillian and her friends will do whatever it takes to bring those responsible to justice, even if it means making a deal with the dangerous and mysterious Elder Witches. But as they work to unmask the killer, they uncover a dark secret that threatens to tear the heart out of their community.
+
+Witch's Blood","<s> 
+
+## SUMMARY
+
+The goal of this project is to create a system that can accurately measure the position and orientation of a person in a room. The main focus of this system is the integration of multiple sensors such as camera, ultrasound sensor, and accelerometer. In addition, the software must be able to interpret the data from these sensors and apply appropriate filtering and calibration to obtain accurate measurements of position and orientation.
+
+## MOTIVATION
+
+The motivation for this project comes from various applications such as virtual reality, teleconferencing, and robotics. In virtual reality, the position and orientation of the user can be used to provide immersive experiences in a virtual environment. In teleconferencing, the ability to accurately track the position and orientation of a speaker can help improve the quality of the video conferencing experience. In robotics, the position and orientation of a robot can be used to control its movement and interactions with its environment.
+
+## APPROACH
+
+The approach for this project involves the following steps:
+
+1. Selection and integration of sensors: The first step is to select and integrate multiple sensors such as camera, ultrasound sensor, and accelerometer into a single system.
+2. Preprocessing of data: Once the sensors are integrated, the next step is to preprocess the data from each sensor to remove noise and other artifacts.
+3. Sensor fusion: The data from multiple sensors is then combined using sensor fusion techniques to obtain accurate measurements of position and orientation.
+4. Filtering and calibration: The filtered data is then calibrated to correct for any errors in the sensors and to ensure that the measurements are consistent over time.
+5. Implementation and testing: The final step is to implement the system on a suitable platform and test it to ensure that it meets the desired accuracy and performance requirements.
+
+## CHALLENGES
+
+The main challenges for this project include:
+
+1. Integration of multiple sensors: The integration of multiple sensors into a single system can be a complex task, as each sensor may require different interfaces and data formats.
+2. Data preprocessing: Preprocessing the data from each sensor to remove noise and other artifacts can be a challenging task, especially when dealing with multiple sources of data.
+3. Sensor fusion: Combining data from multiple sensors to obtain accurate measurements of position","<s> 
+
+## Molecular Mechanisms and Biological Effects of Sirtuin1 Activators on Cardiovascular Diseases
+
+Cardiovascular diseases (CVDs) represent the number one health threat worldwide and are the leading cause of mortality in developed countries. The development of CVDs involves various processes, including endothelial dysfunction, inflammation, oxidative stress, metabolic disorders, and atherosclerosis formation. In recent years, sirtuins, a family of NAD+-dependent histone deacetylases, have gained increasing attention in the cardiovascular field due to their anti-inflammatory, antioxidative, antithrombotic, anti-atherosclerotic, and metabolic properties. Sirt1, the best characterized member of the sirtuin family, plays an important role in the regulation of various cardiovascular functions. However, its expression and activity in the vasculature are decreased in several cardiovascular pathologies, such as diabetes, atherosclerosis, and hypertension, leading to cardiovascular damage. Therefore, activation of Sirt1 is considered a potential therapeutic strategy for the prevention and treatment of CVDs. In this review, we discuss the molecular mechanisms of Sirt1 activation through the use of various classes of compounds, and we explore its effects on cardiovascular physiology by addressing its impact on endothelial function, inflammation, oxidative stress, and metabolism.
+
+## 1. Introduction
+
+Cardiovascular diseases (CVDs) represent the greatest health challenge globally, with an estimated 17.7 million deaths annually, which is approximately 32% of all global deaths. CVDs include several conditions such as coronary artery diseases, heart failure, and cardiac arrhythmias. They are the leading causes of morbidity and mortality in developed countries, where risk factors such as diabetes, obesity, and unhealthy lifestyles contribute to their occurrence. Despite significant progress in the prevention and treatment of CVDs, the current therapeutic strategies are associated with several limitations such as poor efficacy or intolerable side effects. Therefore, the search for alternative therapeutic strategies based on the modulation of endogenous mechanisms"
+17,non_exp_persona," 
+You are a physics student, that has not coded before, but you are currently taking a coding class and were given this problem, for which you are supposed to provide an answer code for the final project. 
+ 
+Provide python code to solve the following task:
+Given an existing dataframe called esc_2010 containing the following column structure:
+Contestants	Total score	San Marino	Sweden	Albania	Netherlands	Austria	United Kingdom	Israel	Serbia	...	Ireland	Denmark	Montenegro	Slovenia	Georgia	Macedonia	Cyprus	Croatia	Switzerland	Lithuania
+In the the contestants column all participating countries are listed. The columns named after countries represent the voters. 
+The content of the columns for each row, represents the points this country assigned to a contestant. 
+Given this dataframe, provide code to plot a network of the countries and the points they assign to each other, but only if 8, 10 or 12 points were assigned. 
+The plot should have the total points of a contestant written in the node. Countries that only voted and did not participate should be represented in a different color. 
+The edges should represent by color or size, the amount of points a country awarded the other. Add a legend to this graph as well. 
+",3,"<s> 
+I would suggest breaking the problem down into smaller subtasks and then writing the code for each subtask. Here is a possible way to do it:
+
+1. Filter the dataframe to only include the countries that have assigned either 8, 10 or 12 points to at least one other country:
+
+```python
+escs_2010 = escs_2010[escs_2010['Total score'].apply(lambda x: np.any([x >= 8, x >= 10, x >= 12].T).any())]
+```
+
+2. Identify the countries that only voted and did not participate, and create a new column in the dataframe to mark their nodes with a different color:
+
+```python
+voted_only = escs_2010[escs_2010['Contestants'].isna()].index
+escs_2010.loc[voted_only, 'node_color'] = 'grey'
+```
+
+3. Create the network graph using the `networkx` and `matplotlib` libraries:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+
+G = nx.from_pandas_edgelist(escs_2010, 'Contestants', 'Country', edge_attr_dict=True)
+pos = nx.spring_layout(G)
+nx.draw_networkx_nodes(G, pos, node_size=1500, node_color=escs_2010['node_color'].values)
+nx.draw_networkx_edges(G, pos, edge_cmap='RdYlGn', edge_width=[5*i for i in G.degree.values()], arrowsize=10)
+nx.draw_networkx_labels(G, pos, font_size=12, label_pos=nx.sticky_label)
+nx.draw_networkx_nodes(G, pos, nodelist=[i for i in G.nodes() if int(escs_2010.loc[escs_2010['Contest","<s> ```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Load your data here, e.g. from a csv file
+# esc_2010 = pd.read_csv(""data.csv"")
+esc_2010 = pd.read_csv('escapedia_scoreboard.csv')
+
+# Drop rows containing only NaNs
+esc_2010.dropna(inplace=True)
+
+# Create a new DataFrame to store the points awarded by each country to all others
+points_df = esc_2010.iloc[esc_2010.index.tolist(), esc_2010.columns.tolist()[1:]].sum(axis=0)
+points_df.columns = esc_2010.columns[1:]
+points_df.index = esc_2010.columns[1:]
+
+# Filter countries that did not participate
+non_participants = esc_2010[""Contestants""].isna().values
+non_participants_df = esc_2010[esc_2010[""Contestants""].isna()]
+non_participants_indices = non_participants_df.index.tolist()
+
+# Create a list with tuples representing the edges with the amount of points
+edges = []
+for i in range(len(points_df.index)):
+    for j in range(i+1, len(points_df.index)):
+        if i in non_participants or j in non_participants:
+            continue
+        points = points_df.iloc[i,j]
+        if points >= 8 and points <= 12:
+            edges.append((esc_2010.columns[i], esc_2010.columns[j], points))
+
+# Create a dictionary to store the node color based on their participation status
+node_colors = {
+    country: 'r' if country in non_participants_indices else 'g' for country in esc_2010.columns
+}
+
+# Plot the network graph
+fig","<s> 
+Here's the code to load the dataframe:
+
+```python
+import pandas as pd
+esc_2010 = pd.read_excel(""esc_2010.xlsx"")
+```
+
+To plot the network, you can use the `networkx` library in combination with `matplotlib` for visualization. Here's a possible solution:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Filter rows with total score less than 100 points
+esc_2010_filtered = esc_2010[esc_2010['Total score'] >= 100]
+
+# Select only the countries as nodes
+countries = esc_2010['Contestants'].unique()
+nodes = [x for x in countries if x not in ['Contestants']]
+
+# Create graph object
+G = nx.Graph()
+
+# Add nodes to graph with total score as node attribute
+for country in nodes:
+    G.add_node(country, total_score=esc_2010_filtered.loc[esc_2010_filtered['Contestants'] == country, 'Total score'].iloc[0])
+
+# Add edges with points as edge attribute
+for index, row in esc_2010_filtered.iterrows():
+    G.add_edge(row['Contestants'], row['Country A'], weight=row['Country A'])
+    G.add_edge(row['Contestants'], row['Country B'], weight=row['Country B'])
+
+# Set colors for nodes based on participation
+node_colors = ['grey' if ""Contestants"" in col else 'lightgrey' for col in esc_2010.columns]
+nx.set_node_properties(G, {'color': node_colors})
+
+# Set edge colors/sizes based on points
+edge_colors = [(1, 0, 0) if w > 8 else (0, 0, 1) for w in G.edges[['weight']].values]
+edge_sizes"

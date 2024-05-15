@@ -1,0 +1,12 @@
+Overall pretty good. Maybe provide some plots of the results next time. Points deducted for the missing parts.
+
+1 One dataset missing in eval -0.25
+
+2 step 4 missing -2
+2.1 missing -1 
+2.2 missing -1
+2.3 missing -1
+2.4 missing -1 
+
+
+total: 17.75 points                  
