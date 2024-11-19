@@ -1,0 +1,115 @@
+---
+title: "Homework 2"
+author: "Sharon Bures"
+date: "2024-06-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r import}
+library(tidyverse)
+setwd("~/Uni/DWVT")
+accidents <- readRDS('accidents.rds')
+head(accidents)
+
+
+```
+
+#### How many observations (rows) does the dataset have? Instead of hard coding the number in your answer, use inline code. Run View(accidents) in your Console to view the data in the data viewer. What does each row in the dataset represent?
+
+```{r Q1}
+View(accidents)
+```
+
+There are 768 rows in the dataframe, where each row is an observation, in this case each row bring an accident.
+
+
+### Which day of the week has the highest number of fatal accidents?
+```{r Q2}
+accidents %>%
+  filter(severity == 'Fatal') %>%
+  count(day_of_week) %>%
+  rename(number_accidents = n) %>%
+  arrange(-number_accidents)
+```
+Friday has the highest number of fatal accidents at 3.
+
+#### Create contingency tables showing the following: (a) severity of accident vs. weather conditions (b) severity of accident vs. visual impairment (using variable light ) (c) severity of accident vs. road surface. Use a visualization to depict the results for at least one of the three tables above.
+
+```{r Q3}
+table(accidents$severity, accidents$weather)
+
+table(accidents$severity, accidents$light)
+
+table(accidents$severity, accidents$road_surface)
+
+
+ggplot(accidents, aes(x = factor(severity), fill = weather)) +
+  geom_bar() + 
+  labs(x = 'Severity', 
+       y = "Number of Accidents", 
+       fill = "Weather", 
+       title = "Number of Accidents per Severity Type", 
+       subtitle = "with weather conditions")
+  
+
+```
+
+#### Recreate the following plot, and describe in context of the data (having the exact same colors or theme is not important).
+
+```{r Q4}
+accidents <- accidents %>%
+  mutate(day_type = case_when(
+    day_of_week == 'Saturday' ~ "Weekend", 
+    day_of_week == 'Sunday' ~ "Weekend", 
+    day_of_week == 'Monday' ~ "Weekday", 
+    day_of_week == 'Tuesday' ~ "Weekday", 
+    day_of_week == 'Wednesday' ~ "Weekday", 
+    day_of_week == 'Thursday' ~ "Weekday", 
+    day_of_week == 'Friday' ~ "Weekday", 
+  
+  ))
+
+
+ggplot(accidents, aes(x = time, fill = severity)) + 
+  geom_density(alpha = 0.5) + 
+  facet_grid(rows = vars(day_type)) +
+  labs(title = 'Number of Accidents throughout the day', 
+       subtitle = 'By day of week and severity', 
+       fill = 'Severity', 
+       y = 'Density', 
+       x = 'Time of Day') + 
+  theme_minimal()
+
+```
+
+#### Create another data visualization based on these data and interpret it. You can choose any variables and any type of visualization you like, but it must have at least three variables, e.g. a scatterplot of x vs. y isn’t enough, but if points are colored by z, that’s fine. Interpret your visualization and mention why it is informative.
+
+```{r Q5}
+ggplot(accidents, aes(x = factor(first_road_class), fill = severity)) +
+  geom_bar() + 
+  facet_grid(rows = vars(day_type)) +
+  labs(x = 'Road Type', 
+       y = "Number of Accidents", 
+       fill = "Severity", 
+       title = "Number of Accidents per Road Type", 
+       subtitle = "with severity")
+
+# Bonus plot, nice to see the layout of the city, can clearly see main roads and ring road
+ggplot(accidents, aes(x = latitude, y = longitude, color = first_road_class, shape = severity)) + 
+  geom_point(alpha = 0.7) + 
+  labs(title = "Position of Accidents in Glasgow", 
+       subtitle = "with severity and road type", 
+       x = "Latitude", 
+       y = "Longitude", 
+       color = "Road Type", 
+       shape = "Severity")
+```
+
+
+I have created a bar plot that shows how many accidents there are per road type. It's interesting to see that there are many accidents on A roads which are large roads leading out of the city usually and also many on C roads which are often country lanes. This has been split into weekend and weekday to see how they differ. The greatest difference is that on the weekends the severity is lower. There are no fatal accidents and the percentage of serious accidents is lower across all road types except for motorways, indicating people are coming to and leaving the city more perhaps, and therefore worse accidents occur there. 
+
+My bonus plot shows the layout of the city through accidents. Here one can see where the most dangerous or accident prone roads are. This is colored by road type and with shapes showing the severity of the accident. Many accidents occur on intersections and in the city center, with a little cluster around and on the motorway.

@@ -1,0 +1,327 @@
+---
+title: "Final Project"
+author: "Sharon Bures"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Part 1: Bike Rentals in DC
+
+### Data cleaning and visualization
+
+```{r, message = FALSE}
+library(tidyverse)
+setwd("~/Uni/DWVT/Final project")
+
+dcbikeshare <- read_csv("dcbikeshare.csv", show_col_types = FALSE)
+head(dcbikeshare)
+
+```
+
+1.  Re-code the `season` variable to be a factor with meaningful level names as outlined in the codebook, with spring as the baseline level.
+
+2.  Recode the binary variables `holiday` and `workingday` to be factors with levels no (0) and yes (1), with no as the baseline level.
+
+3.  Recode the `yr` variable to be a factor with levels 2011 and 2012, with 2011 as the baseline level.
+
+4.  Recode the `weathersit` variable as 1 - clear, 2 - mist, 3 - light precipitation, and 4 - heavy precipitation, with clear as the baseline.
+
+5.  Calculate raw temperature, feeling temperature, humidity, and windspeed as their values given in the dataset multiplied by the maximum raw values stated in the codebook for each variable. Instead of writing over the existing variables, create new ones with concise but informative names.
+
+6.  Check that the sum of `casual` and `registered` adds up to `cnt` for each record.
+
+7.  Recreate the following visualization, and interpret it in context of the data. **Hint:** You will need to use one of the variables you created above. The temperature plotted is the feeling temperature.
+
+8.  Create a visualization displaying the relationship between bike rentals and season. Interpret the plot in context of the data.
+
+```{r}
+# 1
+dcbikeshare$season <- relevel(factor(dcbikeshare$season, 
+                      levels = c(2, 3, 4, 1), 
+                      labels = c("spring", "summer", "fall", "winter")), 
+                      ref = "spring")
+levels(dcbikeshare$season)
+
+
+# 2
+dcbikeshare$holiday <- relevel(factor(dcbikeshare$holiday,
+                              levels = c(0, 1), 
+                              labels = c('no', 'yes')), ref = 'no')
+
+levels(dcbikeshare$holiday)
+dcbikeshare$workingday <- relevel(factor(dcbikeshare$workingday,
+                              levels = c(0, 1), 
+                              labels = c('no', 'yes')), ref = 'no')
+levels(dcbikeshare$workingday)
+
+
+
+# 3 
+dcbikeshare$yr <- relevel(factor(dcbikeshare$yr,
+                              levels = c(0, 1), 
+                              labels = c('2011', '2012')), ref = '2011')
+levels(dcbikeshare$yr)
+
+
+# 4
+dcbikeshare$weathersit <- relevel(factor(dcbikeshare$weathersit,
+                              levels = c(1, 2, 3, 4), 
+                              labels = c('clear', 'mist', 
+                                         'light precipitation', 
+                                         'heavy precipitation')), ref = 'clear')
+levels(dcbikeshare$weathersit)
+
+
+
+# 5
+# nominal (nom) values
+dcbikeshare$nomtemp <- dcbikeshare$temp * (39+8) - 8 
+dcbikeshare$nomatemp <- dcbikeshare$atemp * (50+16) -16
+dcbikeshare$nomhum <- dcbikeshare$hum * 100
+dcbikeshare$nomwindspeed <- dcbikeshare$windspeed * 67
+
+
+# 6 
+# add casual and register and count number of times this value doesn't match cnt
+sum(dcbikeshare$casual + dcbikeshare$registered != dcbikeshare$cnt)
+
+```
+
+```{r}
+# 7
+ggplot(dcbikeshare, mapping = aes(dteday, cnt, color = nomtemp)) + 
+  geom_point() + 
+  labs(title = 'Bike rentals in DC, 2011 and 2012', 
+      subtitle = 'Warmer temperatures associated with more bike rentals', 
+      x = 'Date', 
+      y = 'Bike rentals', 
+      color = 'Temperature (C)')
+```
+
+```{r, warning=FALSE}
+# 8
+dcbikeshare %>%
+  group_by(season) %>%
+  summarize(total_rentals = sum(cnt)) %>%
+  mutate(
+    season = fct_recode(
+      season,
+      Spring = "spring",
+      Summer = "summer",
+      Fall = "fall",
+      Winter = "winter"
+    )
+  ) %>%
+  ggplot(aes(x = season, y = total_rentals)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(
+    title = "Total Number of Bike Rentals",
+    subtitle = 'per season in Washington D.C.',
+    x = NULL, 
+    y = NULL) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::comma)
+```
+
+This plot shows that the most popular season to rent bikes is summer, followed closely by spring and fall. In winter there is a large drop in the amount of bikes rented, probably due to the cold, wet, and sometimes dangerous weather conditions, therefore people may commute in other ways and have other free time activities other than cycling. There are probably also fewer tourists who rent bikes in the winter.
+
+## Part 2: Money in Politics
+
+### Data collection via web scraping
+
+1.  Complete the following scraping tasks. As a guide for these tasks, I have provided an R script called `scrape-pac.R`. Once the code works, include the code in your Quarto/R Markdown file with argument `eval = FALSE`.
+
+-   Check that a bot has permissions to access pages on this domain.
+
+-   Write a function called `scrape_pac()` that scrapes information from the Open Secrets webpage for foreign-connected PAC contributions in a given year [from here](https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/). This function should:
+
+    i.  have one input: the URL of the webpage and should return a data frame.
+
+    ii. rename variables scraped, using `snake_case` naming.
+
+    iii. clean up the `Country of Origin/Parent Company` variable with `str_squish()`.
+
+    iv. add a new column to the data frame for `year`. We will want this information when we ultimately have data from all years, so this is a good time to keep track of it. Our function doesn’t take a year argument, but the year is embedded in the URL, so we can extract it out of there, and add it as a new column. Use the `str_sub()` function to extract the last 4 characters from the URL. You will probably want to look at the help for this function to figure out how to specify “last 4 characters”.
+
+Below some hints are given to step by step:
+
+-   Define the URLs for 2022, 2020, and 2000 contributions. Then, test your function using these URLs as inputs. Does the function seem to do what you expected it to do?
+
+-   Construct a vector called `urls` that contains the URLs for each webpage that contains information on foreign-connected PAC contributions for a given year.
+
+-   Map the `scrape_pac()` function over `urls` in a way that will result in a data frame called `pac_all`. How many observations and variables do you have in this data frame? Use inline code to answer.
+
+-   Save the data as a file called `pac-all.csv` so that you can import it for solving the below tasks.
+
+```{r, eval = FALSE}
+# load packages ----------------------------------------------------------------
+
+library(tidyverse)
+library(rvest)
+library(here)
+library(stringr)
+library(robotstxt)
+
+
+# check if allowed -------------------------------------------------------------
+
+paths_allowed("https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/")
+
+
+# function: scrape_pac ---------------------------------------------------------
+
+scrape_pac <- function(url) {
+
+ # read the page
+ page <- read_html(url)
+
+ # extract the table
+ pac <-  page %>%
+   # select node .DataTable (identified using the SelectorGadget)
+   html_element(".DataTable-Partial") %>%
+   # parse table at node td into a data frame
+   #   table has a head and empty cells should be filled with NAs
+   html_table("td", header = TRUE, fill = TRUE) %>%
+   # convert to a tibble
+   as_tibble()
+
+ # rename variables
+ pac <- pac %>%
+   # rename columns
+   rename(
+     name = `PAC Name` ,
+     country_parent = `Country Parent`,
+     total = `Total`,
+     dems = `Democrats`,
+     repubs = `Republicans`
+   )
+
+ # fix name
+ pac <- pac %>%
+   # remove extraneous whitespaces from the name column
+   mutate(name = str_squish(name))
+
+ # add year
+ pac <- pac %>%
+   # extract last 4 characters of the URL and save as year
+   mutate(year = str_sub(url, -4))
+
+ # return data frame
+ pac
+
+
+}
+
+# test function ----------------------------------------------------------------
+
+url_2022 <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2022"
+pac_2022 <- scrape_pac(url_2022)
+
+url_2020 <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2020"
+pac_2020 <- scrape_pac(url_2020)
+
+url_2000 <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2000"
+pac_2000 <- scrape_pac(url_2000)
+
+# list of urls -----------------------------------------------------------------
+
+# first part of url
+root <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/"
+
+# second part of url (election years as a sequence)
+year <- seq(from = 2000, to = 2022, by = 2)
+
+# construct urls by pasting first and second parts together
+urls <- paste0(root, year)
+
+# map the scrape_pac function over list of urls --------------------------------
+
+pac_all <- mapply(scrap_pac, urls)
+
+# write data -------------------------------------------------------------------
+
+write_csv(pac_all, file = here::here("pac-all.csv"))
+```
+
+### Data cleaning
+
+2.  Separate the `country_parent` into two such that country and parent company appear in different columns for country-level analysis.
+
+3.  Remove the character strings including `$` and `,` signs in the `total`, `dems`,and `repubs` columns and convert these columns to numeric. End your code chunk by printing out the top 10 rows of your data frame (if you just type the data frame name it should automatically do this for you).
+
+    ```{r, message=FALSE}
+    library(tidyverse)
+    library(scales)
+    setwd("~/Uni/DWVT/Final project")
+
+    pac <- read_csv("pac-all.csv", show_col_types = FALSE)
+    head(pac)
+    ```
+
+    ```{r, warning=FALSE}
+    pac <- pac %>%
+      separate(country_parent, into = c('country', 'parent_company'), sep = '/')
+
+    pac <- pac %>%
+      mutate(
+        total = as.numeric(gsub("[$,]", "", total)),
+        dems = as.numeric(gsub("[$,]", "", dems)),
+        repubs = as.numeric(gsub("[$,]", "", repubs))
+      )
+
+    pac
+    ```
+
+    ### Data visualization and interpretation
+
+4.  Create a line plot of total contributions from all foreign-connected PACs in the Canada and Mexico over the years. Once you have made the plot, write a brief interpretation of what the graph reveals.
+
+    ```{r, warning=FALSE, echo=FALSE, message=FALSE}
+    # Filter for Canada and Mexico
+    pac %>%
+      filter(country %in% c("Canada", "Mexico")) %>%
+      group_by(year, country) %>%
+      summarize(total_contributions = sum(total, na.rm = TRUE)) %>%
+      ggplot(aes(x = year, y = total_contributions, color = country, group = country)) +
+      geom_line() +
+      geom_point() +
+      labs(title = "Total Contributions from Foreign-Connected PACs",
+           subtitle = 'in Canada and Mexico',
+           x = NULL,
+           y = NULL,
+           color = NULL) +
+      scale_y_continuous(labels = dollar_format(suffix = "M", scale = 1e-6)) +
+      theme_minimal() + 
+      theme(legend.position = c(0.088, 0.89))
+    ```
+
+    The graph shows that Canadian PACs contribute more than Mexican PACs for supporting the campaigns. Both see a large rise from 2006 with Mexico peaking at 2016 and 2020 for Canada. Canada has a huge increase between 2014 and 2018, with a sharp decline after 2020. It will be interesting to see if this trend continues in 2024 or if perhaps the unpopularity of both candidates means that contributions will be at all-time lows. Mexico in 2022 was at its lowest since 2004, while Canada the lowest since 2014.
+
+5.  Recreate the following visualization. Once you have made the plot, write a brief interpretation of what the graph reveals. Note that these are only German contributions. You will need to make use of functions from the **scales** package for axis labels as well as from **ggplot2**.
+
+    ```{r, warning=FALSE, echo=FALSE, message=FALSE}
+    pac %>%
+      filter(country == 'Germany') %>%
+      group_by(year) %>%
+      summarize(total_dem = sum(dems, na.rm = TRUE), total_rep = sum(repubs, na.rm = TRUE)) %>%
+      ggplot(aes(x = year)) +
+      geom_line(aes(y = total_dem, color = "Democrat")) + 
+      geom_line(aes(y = total_rep, color = "Republican")) + 
+      labs(
+        title = "Contribution to US politics from German-Connected PACs", 
+        subtitle = 'By party, over time', 
+        x = 'Year', 
+        y = 'Amount', 
+        color = 'Party'
+      ) + 
+      scale_color_manual(values = c(
+        "Republican" = "red",
+        "Democrat" = "blue")) +
+        scale_y_continuous(labels = dollar_format(suffix = "M", scale = 1e-6)) +
+      theme_minimal()
+
+    ```
+
+This graph shows that German PACs contribute more to the Republican party in most of the election years. In general, contributions increase over time and peaked in 2018 for both parties, which is a little surprising given that this was a mid-term election. However the fall could be due to the economic downturn in 2020 and the relative unpopularity of the candidates in 2020 and afterwards.

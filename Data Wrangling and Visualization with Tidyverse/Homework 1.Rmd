@@ -1,0 +1,82 @@
+---
+title: "Homework 1"
+author: "Sharon Bures"
+date: "2024-05-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(tidyverse)
+# had to include this otherwise the document wouldn't knit, the R code ran without it though
+library(ggridges)
+setwd("~/Uni/DWVT")
+edibnb <- read.csv("edibnb.csv")
+head(edibnb)
+```
+#### Create a faceted histogram where each facet represents a neighbourhood and displays the distribution of Airbnb prices in that neighbourhood. Think critically about whether it makes more sense to stack the facets on top of each other in a column, lay them out in a row, or wrap them around. Along with your visualisation, include your reasoning for the layout you chose for your facets.
+
+```{r faceted histogram, warning = FALSE, message = FALSE}
+ggplot(data = edibnb, mapping = aes(x = price, fill = neighbourhood)) +
+  geom_histogram() + 
+  facet_wrap(~ neighbourhood) + 
+  labs(title = 'Airbnb Price Distributions in Edinburgh Neighbourhoods', 
+       x = 'Price (£)', 
+       y = 'Count', 
+       fill = 'Neighbourhood')
+```
+
+
+
+
+I chose to wrap the facets, as this creates a 4x4 figure. With more rows or columns the figure becomes either too long or too tall for most applications. The text on the axes also starts to overlap itself, though this may be configurable. 
+
+
+
+
+#### Use a single pipeline (%>%) to identity the neighbourhoods with the top five median listing prices. Then, in another pipeline filter the data for these five neighbourhoods and make ridge plots of the distributions of listing prices in these five neighbourhoods. Use the visualisation to describe the distribution of listing prices in the neighbourhoods. (Your answer will include two pipelines, one of which ends in a visualisation, and a narrative.)
+``` {r ridge plots, warning = FALSE, message = FALSE}
+top_neighborhoods <- edibnb %>%
+  group_by(neighbourhood) %>%
+  summarise(median_price = median(price, na.rm = TRUE)) %>%
+  top_n(5, wt = median_price) %>%
+  pull(neighbourhood)
+print(top_neighborhoods)
+
+
+ggplot(data = edibnb %>% filter(neighbourhood %in% top_neighborhoods), aes(x = price, y = neighbourhood, fill = neighbourhood), alpha = 0.7) +
+  geom_density_ridges() +
+  scale_fill_viridis_d() +  
+  theme_ridges() +
+  labs(title = "Distribution of Listing Prices",
+       subtitle = "Top 5 median prices",
+       x = "Price (£)",
+       y = "Neighborhood", 
+       fill = "Neighborhood")
+
+
+```
+
+
+
+
+There are 7 neighborhoods with the top 5 median prices. All of these neighborhoods have price distributions that are very right skewed, i.e. the right tail of the distribution is much longer than the left tail. This is logical, as the left side of the distribution is bounded by 0, as no Airbnb will be listed for less than that and there are a few listings that are very, very expensive that skew the rest of the distribution. For example, New Town has a listing at £1000 and most of the neighborhoods have listings at or near £500. Most of the listings are below £300 and the distributions peak around £100 or a little over.  
+
+
+
+
+#### Create a visualization that will help you compare the distribution of review scores (review_scores_rating) across neighbourhoods. You get to decide what type of visualisation to create and there is more than one correct answer! In your answer, include a brief interpretation of how Airbnb guests rate properties in general and how the neighbourhoods compare to each other in terms of their ratings.
+```{r review scores, warning = FALSE, message = FALSE}
+ggplot(data = edibnb , mapping = aes(y = neighbourhood, x = review_scores_rating, fill = neighbourhood)) +
+  geom_violin() + 
+  labs(title = 'Airbnb Rating Distributions in Edinburgh Neighbourhoods', 
+       x = 'Rating', 
+       y = 'Neighbourhood') + 
+  guides(fill=FALSE)
+```
+
+
+In general Airbnbs in Edinburgh are rated very highly. For most of the neighborhoods the distribution is widest at 100 and tapers down to about 85, meaning that as the rating is lower there are fewer ratings there. There are a couple neighborhoods that do not peak at 100, these being Tollcross, Southside, and Old Town. Old Town peaks around 97 while the other 2 are pretty uniformly distributed between 95 and 100, which are still very high ratings. Most neighborhoods also have a collection of points at or around 80, probably as this would be 4/5 stars. There are also some very large outliers at 20 for 8 of the neighborhoods, while the other neighborhoods do have a point at 40, 50, or 60. Each neighborhood has either a bad listing or someone who was just very unhappy with their stay. Overall, the vast majority of the ratings are between 90 and 100, as logically the bad listing won't be booked and therefore will eventually be unlisted. 
